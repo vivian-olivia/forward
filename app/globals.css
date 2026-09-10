@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #050914;
+  --ink-panel: #0d1830;
+  --ink-panel-border: #1c2c4a;
+  --accent-cyan: #38bdf8;
+  --accent-purple: #a855f7;
+  --accent-orange: #fb923c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ink: var(--ink);
+  --color-ink-panel: var(--ink-panel);
+  --color-ink-panel-border: var(--ink-panel-border);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-orange: var(--accent-orange);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-display);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(168, 85, 247, 0.16), transparent 40%),
+    radial-gradient(circle at 85% 4%, rgba(251, 146, 60, 0.1), transparent 35%),
+    radial-gradient(circle at 20% 70%, rgba(56, 189, 248, 0.12), transparent 45%),
+    var(--ink);
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-inter), sans-serif;
+}
+
+.font-invite {
+  font-family: "Helvetica Now Display", var(--font-poppins), Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #7dd3fc 0%, #38bdf8 35%, #a855f7 75%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-btn {
+  background: linear-gradient(90deg, #38bdf8 0%, #a855f7 100%);
+}
+
+.gradient-line {
+  background: linear-gradient(90deg, transparent, #38bdf8, #a855f7, transparent);
 }
