@@ -104,39 +104,39 @@ export default function OurStory() {
   );
 
   return (
-    <section ref={rootRef} className="px-5 py-10">
-      <p className="story-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
+    <section ref={rootRef} className="px-5 py-10 md:px-8 md:py-14">
+      <p className="story-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan md:text-sm">
         OUR STORY
       </p>
-      <h2 className="story-heading mt-3 font-display text-3xl font-bold leading-tight">
+      <h2 className="story-heading mt-3 font-display text-3xl font-bold leading-tight md:text-4xl">
         31 Years of
         <br />
         Faith &amp; Impact
       </h2>
-      <p className="story-heading mt-3 text-sm leading-relaxed text-white/70">
+      <p className="story-heading mt-3 text-sm leading-relaxed text-white/70 md:text-base">
         Bersama Tuhan, GKDI TGR telah melayani dan bertumbuh selama 31 tahun.
         Berikut adalah perjalanan singkat kami:
       </p>
 
-      <ol className="story-timeline relative mt-8 space-y-8 border-l border-ink-panel-border pl-6">
+      <ol className="story-timeline relative mt-8 space-y-8 border-l border-ink-panel-border pl-6 md:mt-10">
         {TIMELINE.map((item) => (
           <li key={item.year} className="story-timeline-item relative">
             <span className="story-timeline-dot absolute -left-[29px] top-1 h-3 w-3 rounded-full border-2 border-ink bg-accent-cyan" />
-            <p className="text-xs font-semibold tracking-wide text-accent-cyan">
+            <p className="text-xs font-semibold tracking-wide text-accent-cyan md:text-sm">
               {item.year}
             </p>
-            <h3 className="mt-1 font-display text-base font-semibold text-white">
+            <h3 className="mt-1 font-display text-base font-semibold text-white md:text-lg">
               {item.title}
             </h3>
-            <p className="mt-1 text-sm text-white/60">{item.body}</p>
+            <p className="mt-1 text-sm text-white/60 md:text-base">{item.body}</p>
           </li>
         ))}
       </ol>
 
-      <p className="story-gallery-label mt-10 text-xs font-semibold tracking-[0.25em] text-accent-cyan">
+      <p className="story-gallery-label mt-10 text-xs font-semibold tracking-[0.25em] text-accent-cyan md:text-sm">
         GALERI GKDI TGR
       </p>
-      <div className="story-gallery mt-4 grid grid-cols-2 gap-3">
+      <div className="story-gallery mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
         {GALLERY_LABELS.map((label) => (
           <div
             key={label}

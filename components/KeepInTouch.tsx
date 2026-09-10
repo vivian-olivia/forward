@@ -85,20 +85,20 @@ export default function KeepInTouch() {
   }
 
   return (
-    <section ref={rootRef} id="keep-in-touch" className="px-5 py-10">
-      <p className="touch-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
+    <section ref={rootRef} id="keep-in-touch" className="px-5 py-10 md:px-8 md:py-14">
+      <p className="touch-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan md:text-sm">
         GET IN TOUCH
       </p>
-      <h2 className="touch-heading mt-3 font-display text-3xl font-bold">
+      <h2 className="touch-heading mt-3 font-display text-3xl font-bold md:text-4xl">
         Keep in Touch
       </h2>
-      <p className="touch-heading mt-3 text-sm leading-relaxed text-white/70">
+      <p className="touch-heading mt-3 text-sm leading-relaxed text-white/70 md:text-base">
         Mari tetap terhubung! Isi data di bawah ini agar kami bisa
         menghubungi Anda untuk informasi terbaru seputar acara dan pelayanan
         GKDI.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6">
+      <form onSubmit={handleSubmit} className="mt-6 md:mt-8 md:max-w-md">
         <div className="space-y-4">
           <Field
             icon={<UserIcon />}

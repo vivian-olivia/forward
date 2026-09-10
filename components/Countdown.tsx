@@ -77,15 +77,15 @@ export default function Countdown() {
       {UNITS.map(({ key, label }) => (
         <div
           key={key}
-          className="rounded-xl border border-ink-panel-border bg-ink-panel/80 px-2 py-3 text-center"
+          className="rounded-xl border border-ink-panel-border bg-ink-panel/80 px-2 py-3 text-center md:py-4"
         >
           <p
             ref={key === "seconds" ? secondsRef : undefined}
-            className="font-display text-2xl font-bold tabular-nums text-white"
+            className="font-display text-2xl font-bold tabular-nums text-white md:text-3xl"
           >
             {String(timeLeft[key]).padStart(2, "0")}
           </p>
-          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-white/50">
+          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-white/50 md:text-xs">
             {label}
           </p>
         </div>

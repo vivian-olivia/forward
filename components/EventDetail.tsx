@@ -49,15 +49,15 @@ export default function EventDetail() {
   );
 
   return (
-    <section ref={rootRef} className="px-5 py-10">
-      <p className="event-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
+    <section ref={rootRef} className="px-5 py-10 md:px-8 md:py-14">
+      <p className="event-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan md:text-sm">
         EVENT INFORMATION
       </p>
-      <h2 className="event-heading mt-3 font-display text-3xl font-bold">
+      <h2 className="event-heading mt-3 font-display text-3xl font-bold md:text-4xl">
         Detail Acara
       </h2>
 
-      <div className="event-panel mt-6 divide-y divide-ink-panel-border rounded-2xl border border-ink-panel-border bg-ink-panel/70">
+      <div className="event-panel mt-6 divide-y divide-ink-panel-border rounded-2xl border border-ink-panel-border bg-ink-panel/70 md:mt-8">
         <Row icon={<CalendarIcon />} label="Tanggal & Waktu">
           {EVENT_DATE_LABEL}
           <br />
@@ -70,7 +70,7 @@ export default function EventDetail() {
             <iframe
               title="Event location map"
               src={MAP_EMBED_SRC}
-              className="h-44 w-full"
+              className="h-44 w-full md:h-56"
               loading="lazy"
             />
           </div>
@@ -119,13 +119,13 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="event-row flex gap-3 p-4">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 text-accent-cyan">
+    <div className="event-row flex gap-3 p-4 md:gap-4 md:p-5">
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 text-accent-cyan md:h-9 md:w-9">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold text-accent-cyan">{label}</p>
-        <div className="mt-1 text-sm leading-relaxed text-white/80">
+        <p className="text-xs font-semibold text-accent-cyan md:text-sm">{label}</p>
+        <div className="mt-1 text-sm leading-relaxed text-white/80 md:text-base">
           {children}
         </div>
       </div>

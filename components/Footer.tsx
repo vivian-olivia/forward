@@ -52,36 +52,38 @@ export default function Footer() {
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_100%,rgba(56,189,248,0.18),transparent_55%)]"
       />
-      <Image
-        src="/gkdi-logo-crop.png"
-        alt="GKDI Tangerang"
-        width={321}
-        height={137}
-        className="footer-logo mx-auto h-9 w-auto"
-      />
-      <p className="footer-tagline mt-4 text-xs text-white/50">
-        We gather here to know God and make God known
-      </p>
+      <div className="mx-auto w-full max-w-lg md:max-w-2xl lg:max-w-4xl">
+        <Image
+          src="/gkdi-logo-crop.png"
+          alt="GKDI Tangerang"
+          width={321}
+          height={137}
+          className="footer-logo mx-auto h-9 w-auto md:h-11"
+        />
+        <p className="footer-tagline mt-4 text-xs text-white/50 md:text-sm">
+          We gather here to know God and make God known
+        </p>
 
-      <div className="mt-5 flex justify-center gap-5 text-white/60">
-        <SocialLink label="Instagram" href="https://www.instagram.com/gkdi.tangerang/">
-          <InstagramIcon />
-        </SocialLink>
-        <SocialLink label="YouTube" href="https://www.youtube.com/c/GKDITangerangOfficial">
-          <YoutubeIcon />
-        </SocialLink>
-        <SocialLink label="Facebook" href="https://www.facebook.com/gkditangerang/">
-          <FacebookIcon />
-        </SocialLink>
-        <SocialLink label="Linktree" href="https://linktr.ee/GKDITANGERANG">
-          <LinktreeIcon />
-        </SocialLink>
+        <div className="mt-5 flex justify-center gap-5 text-white/60">
+          <SocialLink label="Instagram" href="https://www.instagram.com/gkdi.tangerang/">
+            <InstagramIcon />
+          </SocialLink>
+          <SocialLink label="YouTube" href="https://www.youtube.com/c/GKDITangerangOfficial">
+            <YoutubeIcon />
+          </SocialLink>
+          <SocialLink label="Facebook" href="https://www.facebook.com/gkditangerang/">
+            <FacebookIcon />
+          </SocialLink>
+          <SocialLink label="Linktree" href="https://linktr.ee/GKDITANGERANG">
+            <LinktreeIcon />
+          </SocialLink>
+        </div>
+
+        <div className="footer-line gradient-line mx-auto mt-8 h-px w-full max-w-xs" />
+        <p className="footer-copyright mt-4 text-[11px] text-white/40">
+          © 2026 GKDI Tangerang. All rights reserved.
+        </p>
       </div>
-
-      <div className="footer-line gradient-line mx-auto mt-8 h-px w-full max-w-xs" />
-      <p className="footer-copyright mt-4 text-[11px] text-white/40">
-        © 2026 GKDI Tangerang. All rights reserved.
-      </p>
     </footer>
   );
 }

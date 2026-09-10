@@ -28,7 +28,7 @@ export default function Hero() {
   );
 
   return (
-    <section ref={rootRef} className="relative min-h-[100svh] overflow-hidden">
+    <section ref={rootRef} className="relative isolate min-h-[100dvh] overflow-hidden">
       <div ref={bgRef} className="absolute inset-0 -z-20 scale-110">
         <Image
           src="/background.png"
@@ -40,18 +40,18 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-ink" />
       </div>
 
-      <div className="flex min-h-[100svh] flex-col items-center px-6 py-10 text-center">
+      <div className="flex min-h-[100dvh] flex-col items-center px-6 py-8 text-center sm:py-10">
         <Image
           src="/gkdi-logo-crop.png"
           alt="GKDI Tangerang"
           width={321}
           height={137}
           priority
-          className="hero-gkdi-logo h-10 w-auto"
+          className="hero-gkdi-logo h-10 w-auto md:h-12"
         />
 
         <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <p className="hero-invite font-invite text-2xl uppercase text-white sm:text-3xl">
+          <p className="hero-invite mt-8 font-invite text-2xl uppercase text-white sm:mt-10 sm:text-3xl md:text-4xl">
             You&rsquo;re Invited!
           </p>
 
@@ -61,7 +61,8 @@ export default function Hero() {
             width={1586}
             height={262}
             priority
-            className="hero-anniv mt-5 h-auto w-full max-w-sm"
+            sizes="(min-width: 768px) 480px, (min-width: 640px) 384px, 90vw"
+            className="hero-anniv mt-4 h-auto w-full max-w-sm sm:mt-5 md:max-w-md"
           />
 
           <Image
@@ -70,27 +71,28 @@ export default function Hero() {
             width={3840}
             height={639}
             priority
-            className="hero-forward-logo mt-2 h-auto w-full max-w-lg"
+            sizes="(min-width: 768px) 640px, (min-width: 640px) 512px, 90vw"
+            className="hero-forward-logo mt-2 h-auto w-full max-w-lg md:max-w-xl"
           />
 
-          <p className="hero-tagline mt-6 text-base font-bold italic leading-snug text-white">
+          <p className="hero-tagline mt-4 text-base font-bold italic leading-snug text-white sm:mt-6 md:text-lg">
             {EVENT_DATE_LABEL_EN} &ndash; {EVENT_TIME_LABEL}
             <br />
             {EVENT_LOCATION}
           </p>
 
-          <div className="hero-countdown mx-auto mt-7 max-w-xs">
+          <div className="hero-countdown mx-auto mt-5 max-w-xs sm:mt-7 md:max-w-sm">
             <Countdown />
           </div>
 
-          <div className="hero-verse mt-7 max-w-xs rounded-2xl border border-white/25 bg-white/5 px-5 py-4 backdrop-blur-sm">
-            <p className="text-xs italic leading-relaxed text-white/90">
+          <div className="hero-verse mt-5 max-w-xs rounded-2xl border border-white/25 bg-white/5 px-5 py-4 backdrop-blur-sm sm:mt-7 md:max-w-sm">
+            <p className="text-xs italic leading-relaxed text-white/90 md:text-sm">
               &ldquo;I have been crucified with Christ and I no longer live,
               but Christ lives in me. The life I now live in the body, I live
               by faith in the Son of God, who loved me and gave himself for
               me.&rdquo;
             </p>
-            <p className="mt-2 text-xs font-bold text-white">Galatians 2:20</p>
+            <p className="mt-2 text-xs font-bold text-white md:text-sm">Galatians 2:20</p>
           </div>
 
           <a
@@ -103,7 +105,7 @@ export default function Hero() {
                 scrollTo: { y: "#keep-in-touch", offsetY: 0 },
               });
             }}
-            className="hero-cta gradient-btn mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95"
+            className="hero-cta gradient-btn mt-6 inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 sm:mt-8 md:px-8 md:py-3.5 md:text-base"
           >
             RSVP NOW
             <span aria-hidden>→</span>
