@@ -46,7 +46,7 @@ export default function Footer() {
   return (
     <footer
       ref={rootRef}
-      className="relative mt-6 overflow-hidden px-5 pb-8 pt-14 text-center"
+      className="relative overflow-hidden px-5 pb-8 pt-14 text-center"
     >
       <div
         aria-hidden
@@ -59,7 +59,7 @@ export default function Footer() {
         height={137}
         className="footer-logo mx-auto h-9 w-auto"
       />
-      <p className="footer-tagline mt-1 text-xs text-white/50">
+      <p className="footer-tagline mt-4 text-xs text-white/50">
         We gather here to know God and make God known
       </p>
 

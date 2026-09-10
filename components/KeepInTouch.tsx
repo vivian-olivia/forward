@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { FaWhatsapp } from "react-icons/fa";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -10,8 +11,9 @@ export default function KeepInTouch() {
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showToast, setShowToast] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
-  const successRef = useRef<HTMLDivElement>(null);
+  const toastRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -45,16 +47,14 @@ export default function KeepInTouch() {
 
   useGSAP(
     () => {
-      if (status !== "success") return;
-      gsap.from(successRef.current, {
-        y: 16,
-        opacity: 0,
-        scale: 0.96,
-        duration: 0.6,
-        ease: "power3.out",
-      });
+      if (!showToast || !toastRef.current) return;
+      gsap.fromTo(
+        toastRef.current,
+        { y: 16, opacity: 0, scale: 0.96 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: "power3.out" },
+      );
     },
-    { scope: rootRef, dependencies: [status] },
+    { scope: rootRef, dependencies: [showToast] },
   );
 
   async function handleSubmit(e: FormEvent) {
@@ -74,9 +74,10 @@ export default function KeepInTouch() {
         throw new Error(data.error ?? "Terjadi kesalahan, silakan coba lagi.");
       }
 
-      setStatus("success");
+      setStatus("idle");
       setName("");
       setPhone("");
+      setShowToast(true);
     } catch (err) {
       setStatus("error");
       setErrorMsg(err instanceof Error ? err.message : "Terjadi kesalahan.");
@@ -84,7 +85,7 @@ export default function KeepInTouch() {
   }
 
   return (
-    <section ref={rootRef} id="keep-in-touch" className="px-5 py-14">
+    <section ref={rootRef} id="keep-in-touch" className="px-5 py-10">
       <p className="touch-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
         GET IN TOUCH
       </p>
@@ -97,28 +98,20 @@ export default function KeepInTouch() {
         GKDI.
       </p>
 
-      {status === "success" ? (
-        <div
-          ref={successRef}
-          className="mt-6 rounded-2xl border border-accent-cyan/40 bg-ink-panel/70 p-5 text-sm text-white/80"
-        >
-          Terima kasih! Data Anda sudah tersimpan — kami akan mengirim
-          pengingat lewat WhatsApp menjelang acara.
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-6">
+        <div className="space-y-4">
           <Field
             icon={<UserIcon />}
-            label="Nama Lengkap *"
+            label="Nama Lengkap*"
             placeholder="Contoh: John Doe"
             value={name}
             onChange={setName}
             required
           />
           <Field
-            icon={<WhatsAppIcon />}
-            label="No. WhatsApp *"
-            placeholder="Contoh: 0812 3456 7890"
+            icon={<FaWhatsapp size={15} />}
+            label="No. WhatsApp*"
+            placeholder="Contoh: 081234567890"
             value={phone}
             onChange={setPhone}
             type="tel"
@@ -128,16 +121,55 @@ export default function KeepInTouch() {
           {status === "error" && (
             <p className="text-sm text-red-400">{errorMsg}</p>
           )}
+        </div>
 
-          <button
-            type="submit"
-            disabled={status === "loading"}
-            className="touch-field gradient-btn flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 disabled:opacity-60"
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="touch-field gradient-btn my-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 disabled:opacity-60"
+        >
+          {status === "loading" ? "Mengirim..." : "SUBMIT"}
+          {status !== "loading" && <span aria-hidden>→</span>}
+        </button>
+      </form>
+
+      {showToast && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5 backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            ref={toastRef}
+            className="relative w-full max-w-md rounded-3xl border border-accent-cyan/40 bg-ink-panel/95 p-8 text-center shadow-2xl shadow-black/50"
           >
-            {status === "loading" ? "Mengirim..." : "SUBMIT"}
-            {status !== "loading" && <span aria-hidden>→</span>}
-          </button>
-        </form>
+            <button
+              type="button"
+              onClick={() => setShowToast(false)}
+              aria-label="Tutup notifikasi"
+              className="absolute right-4 top-4 text-white/50 transition-colors hover:text-white"
+            >
+              ✕
+            </button>
+            <span
+              className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-cyan/15 text-2xl text-accent-cyan"
+              aria-hidden
+            >
+              ✓
+            </span>
+            <p className="mt-5 text-base leading-relaxed text-white/80">
+              Terima kasih! Data Anda sudah tersimpan — kami akan mengirim
+              pengingat lewat WhatsApp menjelang acara.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowToast(false)}
+              className="gradient-btn mt-6 w-full rounded-full py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );
@@ -183,25 +215,6 @@ function UserIcon() {
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
       <path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function WhatsAppIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M20 12a8 8 0 1 1-3.6-6.7L20 4l-1 3.3A7.9 7.9 0 0 1 20 12Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 9.5c0 3 2.5 5.5 5.5 5.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
     </svg>
   );
 }

@@ -49,7 +49,7 @@ export default function EventDetail() {
   );
 
   return (
-    <section ref={rootRef} className="px-5 py-14">
+    <section ref={rootRef} className="px-5 py-10">
       <p className="event-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
         EVENT INFORMATION
       </p>

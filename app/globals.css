@@ -16,12 +16,12 @@
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-purple: var(--accent-purple);
   --color-accent-orange: var(--accent-orange);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-display);
+  --font-sans: var(--font-poppins);
+  --font-display: var(--font-archivo);
 }
 
 body {
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
   background:
     radial-gradient(circle at 15% 8%, rgba(168, 85, 247, 0.16), transparent 40%),
     radial-gradient(circle at 85% 4%, rgba(251, 146, 60, 0.1), transparent 35%),
@@ -43,11 +43,11 @@ body::after {
 }
 
 .font-display {
-  font-family: var(--font-display), var(--font-inter), sans-serif;
+  font-family: var(--font-archivo), var(--font-poppins), sans-serif;
 }
 
 .font-invite {
-  font-family: "Helvetica Now Display", var(--font-poppins), Arial, sans-serif;
+  font-family: var(--font-archivo), var(--font-poppins), Arial, sans-serif;
   font-weight: 800;
   letter-spacing: 0.02em;
 }

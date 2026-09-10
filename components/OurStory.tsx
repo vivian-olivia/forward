@@ -104,7 +104,7 @@ export default function OurStory() {
   );
 
   return (
-    <section ref={rootRef} className="px-5 py-14">
+    <section ref={rootRef} className="px-5 py-10">
       <p className="story-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan">
         OUR STORY
       </p>

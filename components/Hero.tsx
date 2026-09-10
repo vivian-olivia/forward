@@ -12,60 +12,17 @@ export default function Hero() {
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
-        delay: 0.15,
-      });
-
-      tl.from(".hero-gkdi-logo", { y: -20, opacity: 0, duration: 0.7 })
-        .from(
-          ".hero-invite",
-          { y: -20, opacity: 0, duration: 0.7 },
-          "-=0.35",
-        )
-        .from(
-          ".hero-anniv",
-          { y: -24, opacity: 0, scale: 0.96, duration: 0.9 },
-          "-=0.45",
-        )
-        .fromTo(
-          ".hero-forward-logo",
-          { clipPath: "inset(0 100% 0 0)", opacity: 0 },
-          {
-            clipPath: "inset(0 0% 0 0)",
-            opacity: 1,
-            duration: 0.9,
-            ease: "power2.inOut",
-          },
-          "-=0.5",
-        )
-        .from(".hero-tagline", { y: -16, opacity: 0, duration: 0.7 }, "-=0.5")
-        .from(
-          ".hero-countdown",
-          { y: -16, opacity: 0, duration: 0.6 },
-          "-=0.4",
-        )
-        .from(
-          ".hero-verse",
-          { y: -16, opacity: 0, scale: 0.97, duration: 0.7 },
-          "-=0.25",
-        )
-        .from(
-          ".hero-cta",
-          { y: -14, opacity: 0, scale: 0.9, duration: 0.6 },
-          "-=0.35",
-        );
-
-      gsap.to(bgRef.current, {
-        yPercent: 18,
-        ease: "none",
-        scrollTrigger: {
-          trigger: rootRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
+      gsap.fromTo(
+        ".hero-forward-logo",
+        { clipPath: "inset(0 100% 0 0)", opacity: 0 },
+        {
+          clipPath: "inset(0 0% 0 0)",
+          opacity: 1,
+          duration: 1.8,
+          delay: 0.15,
+          ease: "power2.inOut",
         },
-      });
+      );
     },
     { scope: rootRef },
   );
@@ -94,7 +51,7 @@ export default function Hero() {
         />
 
         <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <p className="hero-invite font-invite gradient-text text-2xl uppercase sm:text-3xl">
+          <p className="hero-invite font-invite text-2xl uppercase text-white sm:text-3xl">
             You&rsquo;re Invited!
           </p>
 
@@ -104,7 +61,7 @@ export default function Hero() {
             width={1586}
             height={262}
             priority
-            className="hero-anniv h-auto w-full max-w-sm"
+            className="hero-anniv mt-5 h-auto w-full max-w-sm"
           />
 
           <Image
@@ -138,6 +95,14 @@ export default function Hero() {
 
           <a
             href="#keep-in-touch"
+            onClick={(e) => {
+              e.preventDefault();
+              gsap.to(window, {
+                duration: 1,
+                ease: "power2.inOut",
+                scrollTo: { y: "#keep-in-touch", offsetY: 0 },
+              });
+            }}
             className="hero-cta gradient-btn mt-8 inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95"
           >
             RSVP NOW

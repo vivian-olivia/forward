@@ -21,13 +21,13 @@ export default function Home() {
             <div className="absolute inset-0 bg-ink/60" />
           </div>
 
-          <div className="border-t border-ink-panel-border/60">
+          <div>
             <EventDetail />
           </div>
-          <div className="border-t border-ink-panel-border/60">
+          <div>
             <OurStory />
           </div>
-          <div className="border-t border-ink-panel-border/60">
+          <div>
             <KeepInTouch />
           </div>
         </div>

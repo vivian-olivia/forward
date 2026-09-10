@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   const phone = normalizeIndonesianPhone(rawPhone);
   if (!phone) {
     return NextResponse.json(
-      { error: "Nomor WhatsApp tidak valid. Contoh: 0812 3456 7890." },
+      { error: "Nomor WhatsApp tidak valid." },
       { status: 400 },
     );
   }
