@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Poppins } from "next/font/google";
 import "./globals.css";
+import MusicPlayer from "@/components/MusicPlayer";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -26,8 +27,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="id"
       className={`${archivo.variable} ${poppins.variable} h-full bg-ink antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-ink text-white">
+      <body
+        className="min-h-full flex flex-col bg-ink text-white"
+        suppressHydrationWarning
+      >
         {children}
+        <MusicPlayer />
       </body>
     </html>
   );

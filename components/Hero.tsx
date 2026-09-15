@@ -40,14 +40,14 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-ink" />
       </div>
 
-      <div className="flex min-h-[100dvh] flex-col items-center px-6 py-8 text-center sm:py-10">
+      <div className="relative flex min-h-[100dvh] flex-col items-center px-6 py-8 text-center sm:py-10">
         <Image
           src="/gkdi-logo-crop.png"
           alt="GKDI Tangerang"
           width={321}
           height={137}
           priority
-          className="hero-gkdi-logo h-10 w-auto md:h-12"
+          className="hero-gkdi-logo absolute left-1/2 top-8 h-10 w-auto -translate-x-1/2 sm:top-10 md:h-12"
         />
 
         <div className="flex w-full flex-1 flex-col items-center justify-center">

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { gsap, useGSAP } from "@/lib/gsap";
 
@@ -97,7 +98,7 @@ export default function KeepInTouch() {
   return (
     <section ref={rootRef} id="keep-in-touch" className="px-5 py-10 md:px-8 md:py-14">
       <p className="touch-heading text-xs font-semibold tracking-[0.3em] text-accent-cyan md:text-sm">
-        GET IN TOUCH
+        STAY CONNECTED
       </p>
       <h2 className="touch-heading mt-3 font-display text-3xl font-bold md:text-4xl">
         Keep in Touch
@@ -247,8 +248,16 @@ function SelectField({
   required?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [menuRect, setMenuRect] = useState<{ top: number; left: number; width: number } | null>(
+    null,
+  );
   const wrapperRef = useRef<HTMLDivElement>(null);
   const selected = options.find((opt) => opt.value === value);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -260,12 +269,28 @@ function SelectField({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+
+    function updateRect() {
+      const rect = wrapperRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setMenuRect({ top: rect.bottom + 12, left: rect.left, width: rect.width });
+    }
+
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    window.addEventListener("scroll", updateRect, true);
+    return () => {
+      window.removeEventListener("resize", updateRect);
+      window.removeEventListener("scroll", updateRect, true);
+    };
+  }, [open]);
+
   return (
     <div
       ref={wrapperRef}
-      className={`touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3 ${
-        open ? "z-20" : "z-0"
-      }`}
+      className="touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3"
     >
       <span className="flex items-center gap-2 text-sm font-medium text-white">
         <span className="text-accent-cyan">{icon}</span>
@@ -304,31 +329,34 @@ function SelectField({
         />
       )}
 
-      {open && (
-        <ul
-          role="listbox"
-          className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
-        >
-          {options.map((opt) => (
-            <li key={opt.value}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={opt.value === value}
-                onClick={() => {
-                  onChange(opt.value);
-                  setOpen(false);
-                }}
-                className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent-cyan/10 ${
-                  opt.value === value ? "text-accent-cyan" : "text-white"
-                }`}
-              >
-                {opt.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {mounted && open && menuRect &&
+        createPortal(
+          <ul
+            role="listbox"
+            style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
+            className="fixed z-[100] overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
+          >
+            {options.map((opt) => (
+              <li key={opt.value}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={opt.value === value}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
+                  className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent-cyan/10 ${
+                    opt.value === value ? "text-accent-cyan" : "text-white"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              </li>
+            ))}
+          </ul>,
+          document.body,
+        )}
     </div>
   );
 }
