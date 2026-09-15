@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Hero from "@/components/Hero";
 import EventDetail from "@/components/EventDetail";
-import OurStory from "@/components/OurStory";
+import OurMinistries from "@/components/OurMinistries";
+import UpcomingEvents from "@/components/UpcomingEvents";
 import KeepInTouch from "@/components/KeepInTouch";
 import Footer from "@/components/Footer";
 
@@ -26,7 +27,10 @@ export default function Home() {
             <EventDetail />
           </div>
           <div>
-            <OurStory />
+            <OurMinistries />
+          </div>
+          <div>
+            <UpcomingEvents />
           </div>
           <div>
             <KeepInTouch />

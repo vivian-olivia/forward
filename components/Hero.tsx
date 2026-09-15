@@ -107,7 +107,7 @@ export default function Hero() {
             }}
             className="hero-cta gradient-btn mt-6 inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 sm:mt-8 md:px-8 md:py-3.5 md:text-base"
           >
-            RSVP NOW
+            CONNECT WITH US
             <span aria-hidden>→</span>
           </a>
         </div>

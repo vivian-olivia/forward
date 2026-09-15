@@ -145,7 +145,7 @@ export default function KeepInTouch() {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="touch-field gradient-btn my-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 disabled:opacity-60"
+          className="touch-field gradient-btn relative z-0 my-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/30 transition-transform active:scale-95 disabled:opacity-60"
         >
           {status === "loading" ? "Mengirim..." : "SUBMIT"}
           {status !== "loading" && <span aria-hidden>→</span>}
@@ -263,7 +263,9 @@ function SelectField({
   return (
     <div
       ref={wrapperRef}
-      className="touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3"
+      className={`touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3 ${
+        open ? "z-20" : "z-0"
+      }`}
     >
       <span className="flex items-center gap-2 text-sm font-medium text-white">
         <span className="text-accent-cyan">{icon}</span>
