@@ -6,9 +6,18 @@ import { gsap, useGSAP } from "@/lib/gsap";
 
 type Status = "idle" | "loading" | "success" | "error";
 
+const AGE_GROUPS = [
+  { value: "teenagers", label: "Remaja" },
+  { value: "uni_students", label: "Mahasiswa" },
+  { value: "young_professional", label: "Profesional Muda" },
+  { value: "married", label: "Menikah" },
+  { value: "golden_age", label: "Golden Age (65+)" },
+];
+
 export default function KeepInTouch() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [ageGroup, setAgeGroup] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -66,7 +75,7 @@ export default function KeepInTouch() {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({ name, phone, ageGroup }),
       });
       const data = await res.json();
 
@@ -77,6 +86,7 @@ export default function KeepInTouch() {
       setStatus("idle");
       setName("");
       setPhone("");
+      setAgeGroup("");
       setShowToast(true);
     } catch (err) {
       setStatus("error");
@@ -115,6 +125,15 @@ export default function KeepInTouch() {
             value={phone}
             onChange={setPhone}
             type="tel"
+            required
+          />
+          <SelectField
+            icon={<UsersIcon />}
+            label="Kategori Usia*"
+            value={ageGroup}
+            onChange={setAgeGroup}
+            options={AGE_GROUPS}
+            placeholder="Pilih kategori Anda"
             required
           />
 
@@ -207,6 +226,119 @@ function Field({
         className="mt-1.5 w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none"
       />
     </label>
+  );
+}
+
+function SelectField({
+  icon,
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  required,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder: string;
+  required?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const selected = options.find((opt) => opt.value === value);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3"
+    >
+      <span className="flex items-center gap-2 text-sm font-medium text-white">
+        <span className="text-accent-cyan">{icon}</span>
+        {label}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="mt-1.5 flex w-full items-center justify-between text-sm focus:outline-none"
+      >
+        <span className={selected ? "text-white" : "text-white/30"}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          className={`text-white/50 transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {required && (
+        <input
+          tabIndex={-1}
+          aria-hidden
+          value={value}
+          required
+          onChange={() => {}}
+          className="pointer-events-none absolute h-0 w-0 opacity-0"
+        />
+      )}
+
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
+        >
+          {options.map((opt) => (
+            <li key={opt.value}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={opt.value === value}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent-cyan/10 ${
+                  opt.value === value ? "text-accent-cyan" : "text-white"
+                }`}
+              >
+                {opt.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function UsersIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M2.5 19.5a6.5 6.5 0 0 1 13 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M15.5 6a3 3 0 1 1 0 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M17.5 12.5a5.5 5.5 0 0 1 4 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
   );
 }
 

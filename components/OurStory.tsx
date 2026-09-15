@@ -5,29 +5,29 @@ import { gsap, useGSAP } from "@/lib/gsap";
 
 const TIMELINE = [
   {
-    year: "1994",
+    year: "1995",
     title: "Awal Berdiri",
     body: "GKDI Tangerang pertama kali berdiri sebagai bagian dari Gereja Kristus di Indonesia.",
   },
   {
-    year: "2000 – 2009",
-    title: "Bertumbuh dalam Komunitas",
-    body: "Membangun keluarga rohani, berkembang dalam pelayanan, dan memperluas jangkauan.",
+    year: "2006",
+    title: "Pergantian Kepemimpinan",
+    body: "Kepemimpinan gereja beralih kepada Pdt. Sahat Joyce.",
   },
   {
-    year: "2010 – 2019",
-    title: "Memberkati Generasi",
-    body: "Fokus pada anak muda, pendidikan rohani, dan pelayanan sosial.",
+    year: "2009",
+    title: "Pindah ke Graha GKDI Karawaci",
+    body: "Gereja pindah dan mulai beribadah di Graha GKDI Karawaci.",
   },
   {
-    year: "2020 – 2024",
-    title: "Bertahan & Beradaptasi",
-    body: "Tetap setia di tengah tantangan, melayani dengan cara baru melalui digital dan komunitas.",
+    year: "2024",
+    title: "Jemaat Bertumbuh",
+    body: "Jumlah jemaat bertumbuh hingga mencapai 500 orang.",
   },
   {
-    year: "2025 – 2026",
-    title: "Menuju Masa Depan",
-    body: "Dengan iman yang sama, kami melangkah maju untuk dampak yang lebih besar.",
+    year: "2026",
+    title: "Pindah ke Serpong Convention Center",
+    body: "Gereja pindah dan mulai beribadah di Serpong Convention Center.",
   },
 ];
 
@@ -114,7 +114,7 @@ export default function OurStory() {
         Faith &amp; Impact
       </h2>
       <p className="story-heading mt-3 text-sm leading-relaxed text-white/70 md:text-base">
-        Bersama Tuhan, GKDI TGR telah melayani dan bertumbuh selama 31 tahun.
+        Bersama Tuhan, GKDI Tangerang telah melayani dan bertumbuh selama 31 tahun.
         Berikut adalah perjalanan singkat kami:
       </p>
 
@@ -134,7 +134,7 @@ export default function OurStory() {
       </ol>
 
       <p className="story-gallery-label mt-10 text-xs font-semibold tracking-[0.25em] text-accent-cyan md:text-sm">
-        GALERI GKDI TGR
+        GALERI GKDI Tangerang
       </p>
       <div className="story-gallery mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
         {GALLERY_LABELS.map((label) => (
@@ -146,6 +146,16 @@ export default function OurStory() {
           </div>
         ))}
       </div>
+
+      <a
+        href="https://gkdi.org/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="story-gallery-label mt-8 inline-flex items-center gap-2 text-sm font-semibold text-accent-cyan transition-colors hover:text-white md:text-base"
+      >
+        Get to Know Our Church
+        <span aria-hidden>→</span>
+      </a>
     </section>
   );
 }

@@ -5,9 +5,13 @@ create table if not exists registrants (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   phone text not null unique,
+  age_group text,
   reminders_sent text[] not null default '{}',
   created_at timestamptz not null default now()
 );
+
+-- Run this if `registrants` already exists from an earlier migration:
+alter table registrants add column if not exists age_group text;
 
 create table if not exists reminder_log (
   id uuid primary key default gen_random_uuid(),

@@ -8,9 +8,9 @@ import {
 } from "@/lib/event";
 import { gsap, useGSAP } from "@/lib/gsap";
 
-const CONTACT_NAME = "Rina Susanti";
-const CONTACT_PHONE_DISPLAY = "+62 812 3456 7890";
-const CONTACT_PHONE_WA = "6281234567890";
+const CONTACT_NAME = "Devi";
+const CONTACT_PHONE_DISPLAY = "+62 896-5380-4381";
+const CONTACT_PHONE_WA = "6289653804381";
 const MAP_SHARE_LINK = "https://maps.app.goo.gl/k6ukJa8MC9GJLWGeA";
 const MAP_EMBED_SRC =
   "https://maps.google.com/maps?q=-6.2218735,106.6323915(Serpong+Convention+Center)&z=16&output=embed";
@@ -96,14 +96,6 @@ export default function EventDetail() {
             {CONTACT_PHONE_DISPLAY}
           </a>
         </Row>
-
-        <Row icon={<HangerIcon />} label="Dress Code">
-          <span className="font-semibold text-white">Smart Casual</span>
-          <br />
-          <span className="text-xs text-white/50">
-            Rapi, sopan, dan nyaman
-          </span>
-        </Row>
       </div>
     </section>
   );
@@ -163,26 +155,6 @@ function PhoneIcon() {
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function HangerIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 4a1.6 1.6 0 1 1 1.6 1.6"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 5.6 3 12.5 4.5 15h15L21 12.5 12 5.6ZM4 18.5h16"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-        strokeLinecap="round"
       />
     </svg>
   );
