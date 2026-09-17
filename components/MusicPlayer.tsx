@@ -15,7 +15,7 @@ declare global {
 export default function MusicPlayer() {
   const playerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const wantsUnmuteRef = useRef(false);
+  const wantsPlayRef = useRef(false);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
 
@@ -34,8 +34,7 @@ export default function MusicPlayer() {
         height: "1",
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 1,
-          mute: 1,
+          autoplay: 0,
           loop: 1,
           playlist: VIDEO_ID,
           controls: 0,
@@ -45,13 +44,10 @@ export default function MusicPlayer() {
         events: {
           onReady: (e: any) => {
             e.target.setVolume(25);
-            if (wantsUnmuteRef.current) {
-              e.target.unMute();
-            } else {
-              e.target.mute();
-            }
-            e.target.playVideo();
             setReady(true);
+            if (wantsPlayRef.current) {
+              e.target.playVideo();
+            }
           },
           onStateChange: (e: any) => {
             setPlaying(e.data === window.YT!.PlayerState.PLAYING);
@@ -79,32 +75,17 @@ export default function MusicPlayer() {
       };
     }
 
-    const unmuteOnFirstInteraction = () => {
-      wantsUnmuteRef.current = true;
-      const player = playerRef.current;
-      if (player?.unMute) {
-        player.unMute();
-        player.playVideo();
-      }
-    };
-    const events: Array<keyof WindowEventMap> = ["click", "touchstart", "keydown", "scroll"];
-    events.forEach((event) =>
-      window.addEventListener(event, unmuteOnFirstInteraction, { once: true, passive: true })
-    );
-
     return () => {
       cancelled = true;
-      events.forEach((event) => window.removeEventListener(event, unmuteOnFirstInteraction));
     };
   }, []);
 
   const toggle = () => {
+    wantsPlayRef.current = true;
     const player = playerRef.current;
     if (!player) return;
 
     if (!playing) {
-      wantsUnmuteRef.current = true;
-      player.unMute();
       player.playVideo();
     } else {
       player.pauseVideo();
