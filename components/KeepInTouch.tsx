@@ -121,7 +121,7 @@ export default function KeepInTouch() {
         GKDI.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 md:mt-8 md:max-w-md">
+      <form onSubmit={handleSubmit} className="mt-6 md:mt-8 md:max-w-md" suppressHydrationWarning>
         <div className="space-y-4">
           <Field
             icon={<UserIcon />}
@@ -237,6 +237,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="mt-1.5 w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none"
+        suppressHydrationWarning
       />
     </label>
   );
@@ -338,6 +339,7 @@ function SelectField({
           required
           onChange={() => {}}
           className="pointer-events-none absolute h-0 w-0 opacity-0"
+          suppressHydrationWarning
         />
       )}
 

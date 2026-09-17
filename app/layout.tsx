@@ -26,6 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="id"
       className={`${archivo.variable} ${poppins.variable} h-full bg-ink antialiased`}
+      suppressHydrationWarning
     >
       <body
         className="min-h-full flex flex-col bg-ink text-white"

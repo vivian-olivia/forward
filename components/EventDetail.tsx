@@ -72,6 +72,7 @@ export default function EventDetail() {
               src={MAP_EMBED_SRC}
               className="h-44 w-full md:h-56"
               loading="lazy"
+              suppressHydrationWarning
             />
           </div>
           <a
