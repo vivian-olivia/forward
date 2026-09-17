@@ -4,15 +4,19 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { buildConnectNotification } from "@/lib/message-templates";
+
+// Devi (connect team) — see components/EventDetail.tsx CONTACT_PHONE_WA.
+const CONNECT_TEAM_PHONE_WA = "6289653804381";
 
 type Status = "idle" | "loading" | "success" | "error";
 
 const AGE_GROUPS = [
   { value: "teenagers", label: "Remaja" },
   { value: "uni_students", label: "Mahasiswa" },
-  { value: "young_professional", label: "Profesional Muda" },
+  { value: "young_professional", label: "Bekerja (Lajang)" },
   { value: "married", label: "Menikah" },
-  { value: "golden_age", label: "Golden Age (65+)" },
+  { value: "golden_age", label: "Usia Lanjut (65+)" },
 ];
 
 export default function KeepInTouch() {
@@ -72,6 +76,14 @@ export default function KeepInTouch() {
     setStatus("loading");
     setErrorMsg("");
 
+    const waUrl = `https://wa.me/${CONNECT_TEAM_PHONE_WA}?text=${encodeURIComponent(
+      buildConnectNotification(name),
+    )}`;
+
+    // Open the WhatsApp chat right away, synchronously with the click, so
+    // the user lands straight on the chat instead of a blank tab.
+    window.open(waUrl, "_blank");
+
     try {
       const res = await fetch("/api/rsvp", {
         method: "POST",
@@ -130,7 +142,7 @@ export default function KeepInTouch() {
           />
           <SelectField
             icon={<UsersIcon />}
-            label="Kategori Usia*"
+            label="Status/Kelompok*"
             value={ageGroup}
             onChange={setAgeGroup}
             options={AGE_GROUPS}
@@ -178,8 +190,8 @@ export default function KeepInTouch() {
               ✓
             </span>
             <p className="mt-5 text-base leading-relaxed text-white/80">
-              Terima kasih! Data Anda sudah tersimpan — kami akan mengirim
-              pengingat lewat WhatsApp menjelang acara.
+              Terima kasih! Data Anda sudah tersimpan. Silakan lanjutkan
+              chat WhatsApp yang baru terbuka untuk terhubung dengan tim kami.
             </p>
             <button
               type="button"
@@ -333,6 +345,7 @@ function SelectField({
         createPortal(
           <ul
             role="listbox"
+            onMouseDown={(e) => e.stopPropagation()}
             style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
             className="fixed z-[100] overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
           >
