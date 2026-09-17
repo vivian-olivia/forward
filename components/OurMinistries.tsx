@@ -311,27 +311,37 @@ export default function OurMinistries() {
     scheduleUpdate();
   };
 
-  const endDrag = () => {
+  const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
     if (!dragState.current.dragging) return;
     dragState.current.dragging = false;
-    if (!dragState.current.moved) return;
 
     const track = trackRef.current;
-    let idx = -1;
-    if (track) {
-      // Project a bit past where the finger actually let go, in the direction
-      // it was moving, so a fast short flick still lands on the next/prev
-      // card instead of snapping back to the one you started on.
-      const first = itemRefs.current[0];
-      const second = itemRefs.current[1];
-      const spacing = first && second ? second.offsetLeft - first.offsetLeft : track.clientWidth;
-      const maxOffset = spacing * 0.9;
-      const rawOffset = -dragState.current.velocity * 180;
-      const offset = Math.max(-maxOffset, Math.min(maxOffset, rawOffset));
-      idx = findNearestIndex(track.scrollLeft + offset);
+    if (!track) return;
+
+    // Use the final pointer position rather than only the last recorded
+    // pointermove sample: a fast swipe can end between move events (or the
+    // gesture can get pointercancel'd), leaving `moved`/scrollLeft stuck at
+    // whatever the last sample happened to catch even though the finger
+    // clearly travelled further.
+    const finalX = e?.clientX ?? dragState.current.lastX;
+    const totalDelta = finalX - dragState.current.startX;
+    if (Math.abs(totalDelta) > 4) dragState.current.moved = true;
+    track.scrollLeft = dragState.current.scrollLeft - totalDelta;
+
+    if (!dragState.current.moved) return;
+
+    // Any deliberate swipe always advances exactly one card in that
+    // direction — no matter how small, fast, or slow it was — instead of
+    // snapping back when the drag distance falls short of some threshold.
+    const startIdx = findNearestIndex(dragState.current.scrollLeft);
+    const signal = Math.abs(totalDelta) > 4 ? totalDelta : dragState.current.velocity;
+    if (signal === 0) {
+      centerItem(startIdx);
+      return;
     }
-    if (idx < 0) idx = findNearestIndex();
-    if (idx >= 0) centerItem(idx);
+    const direction = signal < 0 ? 1 : -1;
+    const idx = Math.max(0, Math.min(SLIDES.length - 1, startIdx + direction));
+    centerItem(idx);
   };
 
   const onItemClick = (index: number) => {
@@ -615,6 +625,7 @@ export default function OurMinistries() {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
         className="ministries-gallery mt-6 flex touch-pan-y cursor-grab items-center gap-4 overflow-x-auto select-none active:cursor-grabbing md:mt-8 md:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div aria-hidden className="w-[13%] flex-none sm:w-[14%] md:w-[18%] lg:w-[21%]" />
