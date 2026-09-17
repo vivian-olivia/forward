@@ -5,27 +5,90 @@ import { createPortal } from "react-dom";
 import { FaArrowLeft, FaXmark } from "react-icons/fa6";
 import { gsap, useGSAP } from "@/lib/gsap";
 
-const PLACEHOLDER_DESCRIPTION =
-  "Placeholder description for this ministry. Replace with real copy about its mission, activities, and how people can get involved.";
-
 const SLIDES = [
-  { label: "KKK (Kerajaan Kanak-Kanak)" },
-  { label: "Superteens" },
-  { label: "Youth Connect" },
-  { label: "GEM" },
-  { label: "Married" },
-  { label: "PIWA" },
-  { label: "Bible Study" },
-  { label: "Bible Talk" },
+  {
+    label: "Kids Kingdom",
+    subtitle: "Kerajaan Kanak-Kanak",
+    description:
+      "Sekolah Minggu sebagai tempat anak-anak mengenal kasih dan Firman Tuhan lewat berbagai aktivitas menyenangkan.",
+    tag: "#FunFaithJourney",
+  },
+  {
+    label: "SuperTeens",
+    slug: "superteens",
+    photoCount: 6,
+    description:
+      "Komunitas seru untuk remaja usia SMP–SMA (12–18 tahun) yang ingin membangun pertemanan positif di dalam Kristus.",
+    tag: "#FaithAndFriendship",
+  },
+  {
+    label: "YouthConnect",
+    slug: "youth-connect",
+    photoCount: 12,
+    description:
+      "Ruang kumpul anak muda yang berkuliah atau bekerja, dan young professionals. Tempat terbaik memaksimalkan talenta dan membawa dampak nyata bagi sesama.",
+    tag: "#LiveImpactfully",
+  },
+  {
+    label: "GEM",
+    slug: "gem",
+    photoCount: 6,
+    subtitle: "GKDI English Ministry",
+    description:
+      "Komunitas berbahasa Inggris yang terbuka untuk segala usia, bagi siapa saja yang nyaman dengan komunikasi bilingual.",
+    tag: "#BilingualCommunity",
+  },
+  {
+    label: "Married Ministry",
+    slug: "married",
+    photoCount: 10,
+    description:
+      "Wadah bagi para pasangan untuk bertumbuh bersama, membangun keluarga yang kokoh di atas dasar kasih dan kebenaran Tuhan.",
+    tag: "#StrongerTogether",
+  },
+  {
+    label: "PIWA",
+    slug: "piwa",
+    photoCount: 3,
+    subtitle: "Pria Ilahi Wanita Allah",
+    description:
+      "Komunitas hangat bagi para senior di usia senja untuk terus menikmati dan membagikan kasih Tuhan.",
+    tag: "#GracefulAging",
+  },
+  {
+    label: "Personal Bible Study",
+    slug: "bible-study",
+    photoCount: 3,
+    description:
+      "Perjalanan personal untuk lebih mengenal Kristus melalui Firman-Nya, didampingi oleh fasilitator yang siap membimbingmu langkah demi langkah.",
+    tag: "#DiscoverTheWord",
+  },
+  {
+    label: "Bible Talk",
+    slug: "bible-talk",
+    photoCount: 7,
+    description:
+      "Diskusi Alkitab interaktif dalam ruang yang aman dan hangat di setiap komunitas. Tempat terbaik untuk mulai mengenal Tuhan dan terhubung dengan sesama.",
+    tag: "#SafeSpaceToConnect",
+  },
+  {
+    label: "Dan Masih Banyak Lagi!",
+    slug: "others",
+    photoCount: 10,
+    subtitle: "Ibadah & Special Events",
+    description: "Ingin tahu keseruan aktivitas kami lainnya?",
+    tag: "#MoreToExplore",
+    ctaLabel: "Hubungi Kami",
+  },
 ].map((slide, i) => ({
   ...slide,
-  description: PLACEHOLDER_DESCRIPTION,
-  gallery: Array.from({ length: 6 }, (_, g) => `https://picsum.photos/seed/ministry-${i}-${g}/700/900`),
+  gallery: slide.slug
+    ? Array.from(
+        { length: slide.photoCount ?? 6 },
+        (_, g) => `/ministries/${slide.slug}/${g + 1}.jpg`,
+      )
+    : Array.from({ length: 6 }, (_, g) => `https://picsum.photos/seed/ministry-${i}-${g}/700/900`),
 }));
-
-const SET_LEN = SLIDES.length;
-// Three copies so the track can jump a full set width to fake an endless loop.
-const LOOP_SLIDES = [...SLIDES, ...SLIDES, ...SLIDES];
 
 export default function OurMinistries() {
   const rootRef = useRef<HTMLElement>(null);
@@ -43,7 +106,6 @@ export default function OurMinistries() {
   const rafRef = useRef<number | null>(null);
   const settleRafRef = useRef<number | null>(null);
   const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const loopWidthRef = useRef(0);
   const [mounted, setMounted] = useState(false);
   const [activeSlide, setActiveSlide] = useState<number | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -109,34 +171,9 @@ export default function OurMinistries() {
     });
   };
 
-  // Wraps scrollLeft back into the middle set the instant it drifts too far,
-  // so the reset happens before the browser paints and never reads as a
-  // visible "snap back to the start."
-  const checkLoop = () => {
-    const track = trackRef.current;
-    const loopWidth = loopWidthRef.current;
-    if (!track || !(loopWidth > 0)) return;
-    // Bounded, not a bare while(true): a bad measurement should never be
-    // able to hang the tab, only fail to fully correct for one frame.
-    let guard = 0;
-    while (track.scrollLeft < loopWidth * 0.5 && guard++ < 10) {
-      track.scrollLeft += loopWidth;
-      if (dragState.current.dragging) dragState.current.scrollLeft += loopWidth;
-    }
-    guard = 0;
-    while (track.scrollLeft > loopWidth * 1.5 && guard++ < 10) {
-      track.scrollLeft -= loopWidth;
-      if (dragState.current.dragging) dragState.current.scrollLeft -= loopWidth;
-    }
-  };
-
-  // checkLoop mutates scrollLeft, which fires another native "scroll" event —
-  // running it straight from the scroll handler would re-enter itself and
-  // spin the tab. Routing it through a single coalesced rAF breaks that loop.
   const scheduleUpdate = () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
-      checkLoop();
       updateScales();
     });
   };
@@ -160,17 +197,9 @@ export default function OurMinistries() {
     scheduleSnap();
   };
 
-  const measureLoopWidth = () => {
-    const first = itemRefs.current[0];
-    const secondSetFirst = itemRefs.current[SET_LEN];
-    if (!first || !secondSetFirst) return 0;
-    return secondSetFirst.offsetLeft - first.offsetLeft;
-  };
-
   useEffect(() => {
-    loopWidthRef.current = measureLoopWidth();
     const track = trackRef.current;
-    const startItem = itemRefs.current[SET_LEN];
+    const startItem = itemRefs.current[0];
     if (track && startItem) {
       track.scrollLeft =
         startItem.offsetLeft - track.clientWidth / 2 + startItem.offsetWidth / 2;
@@ -178,7 +207,6 @@ export default function OurMinistries() {
     updateScales();
 
     const handleResize = () => {
-      loopWidthRef.current = measureLoopWidth();
       scheduleUpdate();
     };
     window.addEventListener("resize", handleResize);
@@ -294,7 +322,9 @@ export default function OurMinistries() {
       // Project a bit past where the finger actually let go, in the direction
       // it was moving, so a fast short flick still lands on the next/prev
       // card instead of snapping back to the one you started on.
-      const spacing = loopWidthRef.current > 0 ? loopWidthRef.current / SET_LEN : track.clientWidth;
+      const first = itemRefs.current[0];
+      const second = itemRefs.current[1];
+      const spacing = first && second ? second.offsetLeft - first.offsetLeft : track.clientWidth;
       const maxOffset = spacing * 0.9;
       const rawOffset = -dragState.current.velocity * 180;
       const offset = Math.max(-maxOffset, Math.min(maxOffset, rawOffset));
@@ -308,7 +338,7 @@ export default function OurMinistries() {
     if (dragState.current.moved) return;
     if (findNearestIndex() === index) {
       activeOriginRef.current = itemRefs.current[index]?.getBoundingClientRect() ?? null;
-      setActiveSlide(index % SET_LEN);
+      setActiveSlide(index);
       return;
     }
     centerItem(index);
@@ -588,7 +618,7 @@ export default function OurMinistries() {
         className="ministries-gallery mt-6 flex touch-pan-y cursor-grab items-center gap-4 overflow-x-auto select-none active:cursor-grabbing md:mt-8 md:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div aria-hidden className="w-[13%] flex-none sm:w-[14%] md:w-[18%] lg:w-[21%]" />
-        {LOOP_SLIDES.map((slide, i) => (
+        {SLIDES.map((slide, i) => (
           <div
             key={`${slide.label}-${i}`}
             ref={(el) => {
@@ -659,15 +689,23 @@ export default function OurMinistries() {
             <h3 className="font-display text-3xl font-bold leading-tight drop-shadow-lg md:text-5xl">
               {activeMinistry.label}
             </h3>
+            {activeMinistry.subtitle && (
+              <p className="mt-1 text-sm font-semibold text-accent-cyan md:text-base">
+                {activeMinistry.subtitle}
+              </p>
+            )}
             <p className="mt-4 max-w-md text-sm text-white/80 md:text-base">
               {activeMinistry.description}
+            </p>
+            <p className="mt-3 text-sm font-semibold text-accent-cyan md:text-base">
+              {activeMinistry.tag}
             </p>
             <button
               type="button"
               onClick={handleConnectClick}
               className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-accent-cyan px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-accent-cyan/85 md:text-base"
             >
-              Connect with us
+              {activeMinistry.ctaLabel ?? "Connect with us"}
               <span aria-hidden>→</span>
             </button>
           </div>
