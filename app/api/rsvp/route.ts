@@ -1,12 +1,6 @@
-import { NextResponse, after } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { NextResponse } from "next/server";
 import { normalizeIndonesianPhone } from "@/lib/phone";
-import { sendWhatsAppMessage } from "@/lib/fonnte";
-import { buildThankYouMessage, buildH5TestMessage } from "@/lib/reminder-templates";
-
-// Keeps the serverless function alive long enough for the delayed
-// test message below (~60s) plus the immediate send + DB write.
-export const maxDuration = 65;
+import { appendRegistrantRow } from "@/lib/google-sheets";
 
 const AGE_GROUPS = [
   "teenagers",
@@ -38,33 +32,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = getSupabaseServerClient();
-  const { error } = await supabase
-    .from("registrants")
-    .upsert({ name, phone, age_group: ageGroup }, { onConflict: "phone" });
-
-  if (error) {
-    console.error("Failed to save registrant:", error);
+  try {
+    await appendRegistrantRow({ name, phone, ageGroup });
+  } catch (err) {
+    console.error("Failed to append registrant to Google Sheet:", err);
     return NextResponse.json(
       { error: "Gagal menyimpan data. Silakan coba lagi." },
       { status: 500 },
     );
   }
-
-  try {
-    await sendWhatsAppMessage(phone, buildThankYouMessage(name));
-  } catch (err) {
-    console.error("Failed to send thank-you WhatsApp message:", err);
-  }
-
-  after(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 60_000));
-    try {
-      await sendWhatsAppMessage(phone, buildH5TestMessage(name));
-    } catch (err) {
-      console.error("Failed to send delayed h-5 test message:", err);
-    }
-  });
 
   return NextResponse.json({ ok: true });
 }
