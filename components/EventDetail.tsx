@@ -11,9 +11,10 @@ import { gsap, useGSAP } from "@/lib/gsap";
 const CONTACT_NAME = "Devi";
 const CONTACT_PHONE_DISPLAY = "+62 896-5380-4381";
 const CONTACT_PHONE_WA = "6289653804381";
-const MAP_SHARE_LINK = "https://maps.app.goo.gl/k6ukJa8MC9GJLWGeA";
+const MAP_SHARE_LINK =
+  "https://www.google.com/maps/place/Serpong+Convention+Center/@-6.2218735,106.6298166,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69f95eaf6c9425:0xdc0c157692e78080!8m2!3d-6.2218735!4d106.6323915!16s%2Fg%2F11zgdg1hpl";
 const MAP_EMBED_SRC =
-  "https://maps.google.com/maps?q=-6.2218735,106.6323915(Serpong+Convention+Center)&z=16&output=embed";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.3169387220373!2d106.62981657491734!3d-6.221873493766155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f95eaf6c9425%3A0xdc0c157692e78080!2sSerpong%20Convention%20Center!5e0!3m2!1sen!2sid!4v1789661570616!5m2!1sen!2sid";
 
 export default function EventDetail() {
   const rootRef = useRef<HTMLElement>(null);
