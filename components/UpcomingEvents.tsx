@@ -2,7 +2,13 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { FaCalendarDays, FaClock, FaLocationDot, FaMicrophone } from "react-icons/fa6";
+import {
+  FaCalendarDays,
+  FaCalendarPlus,
+  FaClock,
+  FaLocationDot,
+  FaMicrophone,
+} from "react-icons/fa6";
 import { gsap, useGSAP } from "@/lib/gsap";
 
 const EVENTS = [
@@ -19,6 +25,9 @@ const EVENTS = [
     location: "GKDI Tangerang Lt. 4",
     mapUrl: "https://maps.app.goo.gl/Z8R2r5xFzMVxDUUu6",
     speakers: "Ps Jonson Sibuea & Alin Suliana",
+    // WIB (UTC+7) converted to UTC for the Google Calendar link
+    calendarStartUTC: "20261003T090000Z",
+    calendarEndUTC: "20261003T110000Z",
   },
   {
     title: "Youth Gathering",
@@ -29,6 +38,20 @@ const EVENTS = [
     status: "coming-soon" as const,
   },
 ];
+
+function buildGoogleCalendarUrl(event: (typeof EVENTS)[number]) {
+  if (!("calendarStartUTC" in event) || !event.calendarStartUTC) return null;
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.title,
+    dates: `${event.calendarStartUTC}/${event.calendarEndUTC}`,
+    details: event.tagline,
+    location: event.location ?? "",
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 export default function UpcomingEvents() {
   const rootRef = useRef<HTMLElement>(null);
@@ -139,6 +162,22 @@ export default function UpcomingEvents() {
                     <FaMicrophone className="mt-0.5 shrink-0 text-white/40" />
                     <span>{event.speakers}</span>
                   </div>
+
+                  {(() => {
+                    const calendarUrl = buildGoogleCalendarUrl(event);
+                    if (!calendarUrl) return null;
+                    return (
+                      <a
+                        href={calendarUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                      >
+                        <FaCalendarPlus className="text-white/70" />
+                        Set Reminder
+                      </a>
+                    );
+                  })()}
                 </div>
               ) : (
                 <p className="mt-4 border-t border-white/10 pt-4 text-sm text-white/60 md:text-base">
