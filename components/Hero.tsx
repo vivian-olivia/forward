@@ -41,17 +41,17 @@ export default function Hero() {
       </div>
 
       <div className="relative flex min-h-[100dvh] flex-col items-center px-6 py-8 text-center sm:py-10">
-        <Image
-          src="/gkdi-logo-crop.png"
-          alt="GKDI Tangerang"
-          width={321}
-          height={137}
-          priority
-          className="hero-gkdi-logo absolute left-1/2 top-8 h-10 w-auto -translate-x-1/2 sm:top-10 md:h-12"
-        />
-
         <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <p className="hero-invite mt-8 font-invite text-2xl uppercase text-white sm:mt-10 sm:text-3xl md:text-4xl">
+          <Image
+            src="/gkdi-logo-crop.png"
+            alt="GKDI Tangerang"
+            width={321}
+            height={137}
+            priority
+            className="hero-gkdi-logo h-10 w-auto md:h-12"
+          />
+
+          <p className="hero-invite mt-4 font-invite text-2xl uppercase text-white sm:mt-5 sm:text-3xl md:text-4xl">
             You&rsquo;re Invited!
           </p>
 
