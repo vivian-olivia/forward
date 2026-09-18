@@ -82,7 +82,10 @@ export default function MusicPlayer() {
       };
     }
 
-    const events = ["scroll", "pointerdown", "keydown", "touchstart", "wheel"] as const;
+    // scroll/wheel are not "activation-triggering" input events per the HTML
+    // spec, so browsers never count them toward the autoplay-with-sound
+    // gesture requirement — only real activation events do.
+    const events = ["pointerdown", "keydown", "touchstart"] as const;
     const startOnGesture = () => {
       wantsPlayRef.current = true;
       if (typeof playerRef.current?.unMute === "function") {
