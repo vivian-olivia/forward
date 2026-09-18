@@ -18,6 +18,7 @@ export default function MusicPlayer() {
   const wantsPlayRef = useRef(false);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [audible, setAudible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,6 +54,7 @@ export default function MusicPlayer() {
             // playback does.
             if (wantsPlayRef.current) {
               e.target.unMute();
+              setAudible(true);
             }
             e.target.playVideo();
           },
@@ -90,6 +92,7 @@ export default function MusicPlayer() {
       wantsPlayRef.current = true;
       if (typeof playerRef.current?.unMute === "function") {
         playerRef.current.unMute();
+        setAudible(true);
       }
     };
     events.forEach((event) =>
@@ -107,7 +110,9 @@ export default function MusicPlayer() {
     const player = playerRef.current;
     if (!player) return;
 
-    if (!playing) {
+    if (!playing || !audible) {
+      player.unMute();
+      setAudible(true);
       player.playVideo();
     } else {
       player.pauseVideo();
@@ -125,21 +130,36 @@ export default function MusicPlayer() {
         type="button"
         onClick={toggle}
         disabled={!ready}
-        aria-label={playing ? "Mute music" : "Play music"}
-        aria-pressed={playing}
+        aria-label={
+          playing && audible ? "Mute music" : playing ? "Unmute music" : "Play music"
+        }
+        aria-pressed={playing && audible}
         className="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white shadow-lg backdrop-blur-md ring-1 ring-white/20 transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-50"
       >
-        {playing ? (
+        {playing && audible ? (
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
             <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
+          </svg>
+        ) : playing ? (
+          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+            <path
+              d="M3 9v6h4l5 5V4L7 9H3z"
+              fill="currentColor"
+            />
+            <path
+              d="M16 8l5 8M21 8l-5 8"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
         ) : (
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
           </svg>
         )}
-        {playing && (
+        {playing && audible && (
           <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-white/10" />
         )}
       </button>
