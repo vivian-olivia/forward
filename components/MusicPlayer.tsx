@@ -18,7 +18,6 @@ export default function MusicPlayer() {
   const wantsPlayRef = useRef(false);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [audible, setAudible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,8 +34,7 @@ export default function MusicPlayer() {
         height: "1",
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 1,
-          mute: 1,
+          autoplay: 0,
           loop: 1,
           playlist: VIDEO_ID,
           controls: 0,
@@ -47,19 +45,29 @@ export default function MusicPlayer() {
           onReady: (e: any) => {
             e.target.setVolume(12);
             setReady(true);
-            // Browsers only allow autoplay when muted, so start muted and
-            // unmute as soon as the visitor does anything (see the gesture
-            // listeners below) — unmuting already-playing media doesn't
-            // require a fresh user gesture the way starting audible
-            // playback does.
             if (wantsPlayRef.current) {
               e.target.unMute();
-              setAudible(true);
+              e.target.playVideo();
+            } else {
+              // Muted autoplay is always allowed, so use it to start
+              // buffering right away instead of waiting for the user's
+              // gesture — that's what was causing the audible delay.
+              e.target.mute();
+              e.target.playVideo();
             }
-            e.target.playVideo();
           },
           onStateChange: (e: any) => {
-            setPlaying(e.data === window.YT!.PlayerState.PLAYING);
+            const state = e.data;
+            setPlaying(state === window.YT!.PlayerState.PLAYING && !e.target.isMuted());
+            if (state === window.YT!.PlayerState.PLAYING && !wantsPlayRef.current) {
+              // Let the muted warm-up buffer a moment, then pause and wait
+              // for the real gesture so it resumes near-instantly.
+              window.setTimeout(() => {
+                if (!wantsPlayRef.current && playerRef.current) {
+                  playerRef.current.pauseVideo();
+                }
+              }, 1000);
+            }
           },
           onError: (e: any) => {
             console.error("YouTube player error", e.data);
@@ -84,15 +92,23 @@ export default function MusicPlayer() {
       };
     }
 
-    // scroll/wheel are not "activation-triggering" input events per the HTML
-    // spec, so browsers never count them toward the autoplay-with-sound
-    // gesture requirement — only real activation events do.
+    // Browsers only allow audible playback to start from a real activation
+    // gesture (click, key press, tap) — scroll/wheel never qualify. Start
+    // playback for real the first time any of these happens anywhere on
+    // the page, not just on the button itself.
     const events = ["pointerdown", "keydown", "touchstart"] as const;
     const startOnGesture = () => {
       wantsPlayRef.current = true;
-      if (typeof playerRef.current?.unMute === "function") {
-        playerRef.current.unMute();
-        setAudible(true);
+      const player = playerRef.current;
+      // The warm-up buffering plays muted — if it's already underway by the
+      // time the gesture fires, playVideo() alone is a no-op (it's already
+      // playing) and the track stays silent unless we explicitly unmute it.
+      if (typeof player?.unMute === "function") {
+        player.unMute();
+        player.setVolume(12);
+      }
+      if (typeof player?.playVideo === "function") {
+        player.playVideo();
       }
     };
     events.forEach((event) =>
@@ -110,9 +126,9 @@ export default function MusicPlayer() {
     const player = playerRef.current;
     if (!player) return;
 
-    if (!playing || !audible) {
+    if (!playing) {
       player.unMute();
-      setAudible(true);
+      player.setVolume(12);
       player.playVideo();
     } else {
       player.pauseVideo();
@@ -130,36 +146,21 @@ export default function MusicPlayer() {
         type="button"
         onClick={toggle}
         disabled={!ready}
-        aria-label={
-          playing && audible ? "Mute music" : playing ? "Unmute music" : "Play music"
-        }
-        aria-pressed={playing && audible}
+        aria-label={playing ? "Mute music" : "Play music"}
+        aria-pressed={playing}
         className="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white shadow-lg backdrop-blur-md ring-1 ring-white/20 transition hover:bg-white/20 disabled:cursor-wait disabled:opacity-50"
       >
-        {playing && audible ? (
+        {playing ? (
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
             <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
-          </svg>
-        ) : playing ? (
-          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-            <path
-              d="M3 9v6h4l5 5V4L7 9H3z"
-              fill="currentColor"
-            />
-            <path
-              d="M16 8l5 8M21 8l-5 8"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
           </svg>
         ) : (
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
           </svg>
         )}
-        {playing && audible && (
+        {playing && (
           <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-white/10" />
         )}
       </button>
