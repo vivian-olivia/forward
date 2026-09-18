@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { setMusicPlayHandler } from "@/lib/musicBridge";
 
 const VIDEO_ID = "EjfzKHoEkso";
 const YT_SCRIPT_ID = "youtube-iframe-api";
@@ -80,15 +81,21 @@ export default function MusicPlayer() {
     };
   }, []);
 
-  const toggle = () => {
+  const play = () => {
     wantsPlayRef.current = true;
-    const player = playerRef.current;
-    if (!player) return;
+    playerRef.current?.playVideo();
+  };
 
+  useEffect(() => {
+    setMusicPlayHandler(play);
+    return () => setMusicPlayHandler(null);
+  }, []);
+
+  const toggle = () => {
     if (!playing) {
-      player.playVideo();
+      play();
     } else {
-      player.pauseVideo();
+      playerRef.current?.pauseVideo();
     }
   };
 

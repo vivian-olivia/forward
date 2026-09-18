@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { requestMusicPlay } from "@/lib/musicBridge";
 
 type Phase = "floating" | "playing" | "fading" | "done";
 
@@ -22,14 +23,16 @@ export default function EnvelopeIntro({
   const [phase, setPhase] = useState<Phase>("floating");
   const envelopeRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (phase === "playing") {
-      envelopeRef.current?.play().catch(() => {});
-    }
-  }, [phase]);
-
   const handleOpen = () => {
     if (phase !== "floating") return;
+    // Stays muted: an unmuted play() can be rejected by mobile browsers, which
+    // would silently leave the video frozen on its first frame. The envelope
+    // clip has no audio of its own anyway — the sound we want is the YouTube
+    // track below.
+    envelopeRef.current?.play().catch(() => {});
+    // Triggered synchronously in this click handler so browsers count it as a
+    // user gesture and allow the YouTube background music to autoplay with sound.
+    requestMusicPlay();
     setPhase("playing");
   };
 
@@ -50,13 +53,11 @@ export default function EnvelopeIntro({
           style={{ transitionDuration: `${fadeDurationMs}ms` }}
           onTransitionEnd={handleTransitionEnd}
         >
-          <video
-            src="/loop-float.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
+          {/* Static poster instead of an autoplaying loop: in-app browsers (e.g. WhatsApp)
+              block background video autoplay and show a stray native play icon over it. */}
+          <img
+            src="/envelope-poster.jpg"
+            alt=""
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
               envelopeVisible ? "opacity-0" : "opacity-100"
             }`}
