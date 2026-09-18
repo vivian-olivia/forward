@@ -34,7 +34,8 @@ export default function MusicPlayer() {
         height: "1",
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
+          mute: 1,
           loop: 1,
           playlist: VIDEO_ID,
           controls: 0,
@@ -45,9 +46,15 @@ export default function MusicPlayer() {
           onReady: (e: any) => {
             e.target.setVolume(12);
             setReady(true);
+            // Browsers only allow autoplay when muted, so start muted and
+            // unmute as soon as the visitor does anything (see the gesture
+            // listeners below) — unmuting already-playing media doesn't
+            // require a fresh user gesture the way starting audible
+            // playback does.
             if (wantsPlayRef.current) {
-              e.target.playVideo();
+              e.target.unMute();
             }
+            e.target.playVideo();
           },
           onStateChange: (e: any) => {
             setPlaying(e.data === window.YT!.PlayerState.PLAYING);
@@ -78,7 +85,9 @@ export default function MusicPlayer() {
     const events = ["scroll", "pointerdown", "keydown", "touchstart", "wheel"] as const;
     const startOnGesture = () => {
       wantsPlayRef.current = true;
-      playerRef.current?.playVideo();
+      if (typeof playerRef.current?.unMute === "function") {
+        playerRef.current.unMute();
+      }
     };
     events.forEach((event) =>
       window.addEventListener(event, startOnGesture, { once: true, passive: true }),
