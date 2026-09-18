@@ -8,6 +8,8 @@ import { gsap, useGSAP } from "@/lib/gsap";
 const SLIDES = [
   {
     label: "Kids Kingdom",
+    slug: "kids-kingdom",
+    photoCount: 7,
     subtitle: "Kerajaan Kanak-Kanak",
     description:
       "Sekolah Minggu sebagai tempat anak-anak mengenal kasih dan Firman Tuhan lewat berbagai aktivitas menyenangkan.",
