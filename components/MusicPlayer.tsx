@@ -34,7 +34,7 @@ export default function MusicPlayer() {
         height: "1",
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           loop: 1,
           playlist: VIDEO_ID,
           controls: 0,
@@ -75,8 +75,18 @@ export default function MusicPlayer() {
       };
     }
 
+    const events = ["scroll", "pointerdown", "keydown", "touchstart", "wheel"] as const;
+    const startOnGesture = () => {
+      wantsPlayRef.current = true;
+      playerRef.current?.playVideo();
+    };
+    events.forEach((event) =>
+      window.addEventListener(event, startOnGesture, { once: true, passive: true }),
+    );
+
     return () => {
       cancelled = true;
+      events.forEach((event) => window.removeEventListener(event, startOnGesture));
     };
   }, []);
 
