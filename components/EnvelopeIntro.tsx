@@ -50,13 +50,11 @@ export default function EnvelopeIntro({
           style={{ transitionDuration: `${fadeDurationMs}ms` }}
           onTransitionEnd={handleTransitionEnd}
         >
-          <video
-            src="/loop-float.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
+          {/* Static poster instead of an autoplaying loop: in-app browsers (e.g. WhatsApp)
+              block background video autoplay and show a stray native play icon over it. */}
+          <img
+            src="/envelope-poster.jpg"
+            alt=""
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
               envelopeVisible ? "opacity-0" : "opacity-100"
             }`}
