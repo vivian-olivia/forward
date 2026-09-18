@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Poppins } from "next/font/google";
 import "./globals.css";
 import MusicPlayer from "@/components/MusicPlayer";
+import EnvelopeIntro from "@/components/EnvelopeIntro";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         className="min-h-full flex flex-col bg-ink text-white"
         suppressHydrationWarning
       >
-        {children}
+        <EnvelopeIntro>{children}</EnvelopeIntro>
         <MusicPlayer />
       </body>
     </html>
