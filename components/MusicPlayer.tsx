@@ -34,7 +34,7 @@ export default function MusicPlayer() {
         height: "1",
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           loop: 1,
           playlist: VIDEO_ID,
           controls: 0,
@@ -46,11 +46,28 @@ export default function MusicPlayer() {
             e.target.setVolume(12);
             setReady(true);
             if (wantsPlayRef.current) {
+              e.target.unMute();
+              e.target.playVideo();
+            } else {
+              // Muted autoplay is always allowed, so use it to start
+              // buffering right away instead of waiting for the user's
+              // gesture — that's what was causing the audible delay.
+              e.target.mute();
               e.target.playVideo();
             }
           },
           onStateChange: (e: any) => {
-            setPlaying(e.data === window.YT!.PlayerState.PLAYING);
+            const state = e.data;
+            setPlaying(state === window.YT!.PlayerState.PLAYING && !e.target.isMuted());
+            if (state === window.YT!.PlayerState.PLAYING && !wantsPlayRef.current) {
+              // Let the muted warm-up buffer a moment, then pause and wait
+              // for the real gesture so it resumes near-instantly.
+              window.setTimeout(() => {
+                if (!wantsPlayRef.current && playerRef.current) {
+                  playerRef.current.pauseVideo();
+                }
+              }, 1000);
+            }
           },
           onError: (e: any) => {
             console.error("YouTube player error", e.data);
@@ -75,8 +92,32 @@ export default function MusicPlayer() {
       };
     }
 
+    // Browsers only allow audible playback to start from a real activation
+    // gesture (click, key press, tap) — scroll/wheel never qualify. Start
+    // playback for real the first time any of these happens anywhere on
+    // the page, not just on the button itself.
+    const events = ["pointerdown", "keydown", "touchstart"] as const;
+    const startOnGesture = () => {
+      wantsPlayRef.current = true;
+      const player = playerRef.current;
+      // The warm-up buffering plays muted — if it's already underway by the
+      // time the gesture fires, playVideo() alone is a no-op (it's already
+      // playing) and the track stays silent unless we explicitly unmute it.
+      if (typeof player?.unMute === "function") {
+        player.unMute();
+        player.setVolume(12);
+      }
+      if (typeof player?.playVideo === "function") {
+        player.playVideo();
+      }
+    };
+    events.forEach((event) =>
+      window.addEventListener(event, startOnGesture, { once: true, passive: true }),
+    );
+
     return () => {
       cancelled = true;
+      events.forEach((event) => window.removeEventListener(event, startOnGesture));
     };
   }, []);
 
@@ -86,6 +127,8 @@ export default function MusicPlayer() {
     if (!player) return;
 
     if (!playing) {
+      player.unMute();
+      player.setVolume(12);
       player.playVideo();
     } else {
       player.pauseVideo();
