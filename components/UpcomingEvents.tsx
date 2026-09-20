@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import {
   FaCalendarDays,
@@ -8,6 +8,7 @@ import {
   FaClock,
   FaLocationDot,
   FaMicrophone,
+  FaXmark,
 } from "react-icons/fa6";
 import { gsap, useGSAP } from "@/lib/gsap";
 
@@ -15,7 +16,7 @@ const EVENTS = [
   {
     title: "Parenting Class",
     tagline: "Dekat di Hati, Kuat di Relasi",
-    image: "/events/parenting-class.jpg",
+    image: "/events/parenting-2.jpeg",
     imagePosition: "center 25%",
     badgeClass: "bg-accent-orange",
     taglineClass: "text-accent-orange",
@@ -32,7 +33,9 @@ const EVENTS = [
   {
     title: "Youth Gathering",
     tagline: "Kumpul seru bareng YouthConnect",
-    image: "/events/youth-gathering.jpg",
+    image: "/events/youth-gathering-2.jpeg",
+    imagePosition: "center top",
+    imageScaleClass: "scale-[1.04] origin-top",
     badgeClass: "bg-accent-cyan",
     taglineClass: "text-accent-cyan",
     status: "coming-soon" as const,
@@ -55,6 +58,7 @@ function buildGoogleCalendarUrl(event: (typeof EVENTS)[number]) {
 
 export default function UpcomingEvents() {
   const rootRef = useRef<HTMLElement>(null);
+  const [zoomedEvent, setZoomedEvent] = useState<(typeof EVENTS)[number] | null>(null);
 
   useGSAP(
     () => {
@@ -101,29 +105,36 @@ export default function UpcomingEvents() {
             key={event.title}
             className="events-item group relative overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel/70"
           >
-            <div className="relative h-48 w-full overflow-hidden md:h-56">
+            <button
+              type="button"
+              onClick={() => setZoomedEvent(event)}
+              className="relative block h-48 w-full cursor-zoom-in overflow-hidden md:h-56"
+              aria-label={`Zoom ${event.title} image`}
+            >
               <Image
                 src={event.image}
                 alt={event.title}
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
+                  "imageScaleClass" in event ? event.imageScaleClass : ""
+                }`}
                 style={{ objectPosition: event.imagePosition ?? "center" }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink-bg via-ink-bg/20 to-transparent" />
 
               {event.status === "coming-soon" ? (
-                <span className="absolute right-4 top-4 rounded-full bg-black/50 px-3 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
+                <span className="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
                   Coming Soon
                 </span>
               ) : (
                 <span
-                  className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-semibold tracking-wide text-ink-bg ${event.badgeClass}`}
+                  className={`absolute bottom-4 right-4 rounded-full px-3 py-1 text-xs font-semibold tracking-wide text-ink-bg ${event.badgeClass}`}
                 >
                   {event.date}
                 </span>
               )}
-            </div>
+            </button>
 
             <div className="p-5 md:p-6">
               <h3 className="font-display text-xl font-bold text-white md:text-2xl">
@@ -188,6 +199,34 @@ export default function UpcomingEvents() {
           </div>
         ))}
       </div>
+
+      {zoomedEvent ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          onClick={() => setZoomedEvent(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setZoomedEvent(null)}
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+            aria-label="Close zoomed image"
+          >
+            <FaXmark />
+          </button>
+          <div
+            className="relative h-[80vh] w-full max-w-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={zoomedEvent.image}
+              alt={zoomedEvent.title}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
