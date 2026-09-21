@@ -23,9 +23,16 @@ export default function KeepInTouch() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
+  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{
+    name?: string;
+    phone?: string;
+    ageGroup?: string;
+    consent?: string;
+  }>({});
   const rootRef = useRef<HTMLElement>(null);
   const toastRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +80,17 @@ export default function KeepInTouch() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (status === "loading") return;
+
+    const errors: typeof fieldErrors = {};
+    if (!name.trim()) errors.name = "Nama lengkap wajib diisi.";
+    if (!phone.trim()) errors.phone = "No. WhatsApp wajib diisi.";
+    if (!ageGroup) errors.ageGroup = "Pilih status/kelompok Anda.";
+    if (!consent) errors.consent = "Anda harus menyetujui persetujuan ini.";
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setStatus("loading");
     setErrorMsg("");
 
@@ -100,6 +118,8 @@ export default function KeepInTouch() {
       setName("");
       setPhone("");
       setAgeGroup("");
+      setConsent(false);
+      setFieldErrors({});
       setShowToast(true);
     } catch (err) {
       setStatus("error");
@@ -128,27 +148,58 @@ export default function KeepInTouch() {
             label="Nama Lengkap*"
             placeholder="Contoh: John Doe"
             value={name}
-            onChange={setName}
-            required
+            onChange={(v) => {
+              setName(v);
+              if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
+            }}
+            error={fieldErrors.name}
           />
           <Field
             icon={<FaWhatsapp size={15} />}
             label="No. WhatsApp*"
             placeholder="Contoh: 081234567890"
             value={phone}
-            onChange={setPhone}
+            onChange={(v) => {
+              setPhone(v);
+              if (fieldErrors.phone) setFieldErrors((prev) => ({ ...prev, phone: undefined }));
+            }}
             type="tel"
-            required
+            error={fieldErrors.phone}
           />
           <SelectField
             icon={<UsersIcon />}
             label="Status/Kelompok*"
             value={ageGroup}
-            onChange={setAgeGroup}
+            onChange={(v) => {
+              setAgeGroup(v);
+              if (fieldErrors.ageGroup) setFieldErrors((prev) => ({ ...prev, ageGroup: undefined }));
+            }}
             options={AGE_GROUPS}
             placeholder="Pilih kategori Anda"
-            required
+            error={fieldErrors.ageGroup}
           />
+
+          <div className="touch-field">
+            <label className="flex items-start gap-2.5 px-4 text-xs leading-relaxed text-white/60 md:text-sm">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => {
+                  setConsent(e.target.checked);
+                  if (fieldErrors.consent) setFieldErrors((prev) => ({ ...prev, consent: undefined }));
+                }}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-accent-cyan"
+              />
+              <span>
+                Saya menyetujui dan mengizinkan data pribadi saya
+                digunakan oleh tim GKDI untuk keperluan komunikasi terkait
+                acara GKDI.
+              </span>
+            </label>
+            {fieldErrors.consent && (
+              <p className="mt-1 px-4 text-xs text-red-400">{fieldErrors.consent}</p>
+            )}
+          </div>
 
           {status === "error" && (
             <p className="text-sm text-red-400">{errorMsg}</p>
@@ -214,7 +265,7 @@ function Field({
   value,
   onChange,
   type = "text",
-  required,
+  error,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -222,24 +273,30 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   type?: string;
-  required?: boolean;
+  error?: string;
 }) {
   return (
-    <label className="touch-field block rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3">
-      <span className="flex items-center gap-2 text-sm font-medium text-white">
-        <span className="text-accent-cyan">{icon}</span>
-        {label}
-      </span>
-      <input
-        type={type}
-        required={required}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="mt-1.5 w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none"
-        suppressHydrationWarning
-      />
-    </label>
+    <div className="touch-field">
+      <label
+        className={`block rounded-2xl border bg-ink-panel/70 px-4 py-3 ${
+          error ? "border-red-400/60" : "border-ink-panel-border"
+        }`}
+      >
+        <span className="flex items-center gap-2 text-sm font-medium text-white">
+          <span className="text-accent-cyan">{icon}</span>
+          {label}
+        </span>
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="mt-1.5 w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none"
+          suppressHydrationWarning
+        />
+      </label>
+      {error && <p className="mt-1 px-4 text-xs text-red-400">{error}</p>}
+    </div>
   );
 }
 
@@ -250,7 +307,7 @@ function SelectField({
   onChange,
   options,
   placeholder,
-  required,
+  error,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -258,7 +315,7 @@ function SelectField({
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder: string;
-  required?: boolean;
+  error?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -301,77 +358,70 @@ function SelectField({
   }, [open]);
 
   return (
-    <div
-      ref={wrapperRef}
-      className="touch-field relative rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3"
-    >
-      <span className="flex items-center gap-2 text-sm font-medium text-white">
-        <span className="text-accent-cyan">{icon}</span>
-        {label}
-      </span>
-
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        className="mt-1.5 flex w-full items-center justify-between text-sm focus:outline-none"
+    <div className="touch-field">
+      <div
+        ref={wrapperRef}
+        className={`relative rounded-2xl border bg-ink-panel/70 px-4 py-3 ${
+          error ? "border-red-400/60" : "border-ink-panel-border"
+        }`}
       >
-        <span className={selected ? "text-white" : "text-white/30"}>
-          {selected ? selected.label : placeholder}
+        <span className="flex items-center gap-2 text-sm font-medium text-white">
+          <span className="text-accent-cyan">{icon}</span>
+          {label}
         </span>
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          className={`text-white/50 transition-transform ${open ? "rotate-180" : ""}`}
+
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          className="mt-1.5 flex w-full items-center justify-between text-sm focus:outline-none"
         >
-          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
-      {required && (
-        <input
-          tabIndex={-1}
-          aria-hidden
-          value={value}
-          required
-          onChange={() => {}}
-          className="pointer-events-none absolute h-0 w-0 opacity-0"
-          suppressHydrationWarning
-        />
-      )}
-
-      {mounted && open && menuRect &&
-        createPortal(
-          <ul
-            role="listbox"
-            onMouseDown={(e) => e.stopPropagation()}
-            style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
-            className="fixed z-[100] overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
+          <span className={selected ? "text-white" : "text-white/30"}>
+            {selected ? selected.label : placeholder}
+          </span>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            className={`text-white/50 transition-transform ${open ? "rotate-180" : ""}`}
           >
-            {options.map((opt) => (
-              <li key={opt.value}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={opt.value === value}
-                  onClick={() => {
-                    onChange(opt.value);
-                    setOpen(false);
-                  }}
-                  className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent-cyan/10 ${
-                    opt.value === value ? "text-accent-cyan" : "text-white"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              </li>
-            ))}
-          </ul>,
-          document.body,
-        )}
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {mounted && open && menuRect &&
+          createPortal(
+            <ul
+              role="listbox"
+              onMouseDown={(e) => e.stopPropagation()}
+              style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width }}
+              className="fixed z-[100] overflow-hidden rounded-2xl border border-ink-panel-border bg-ink-panel shadow-xl shadow-black/40"
+            >
+              {options.map((opt) => (
+                <li key={opt.value}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={opt.value === value}
+                    onClick={() => {
+                      onChange(opt.value);
+                      setOpen(false);
+                    }}
+                    className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent-cyan/10 ${
+                      opt.value === value ? "text-accent-cyan" : "text-white"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                </li>
+              ))}
+            </ul>,
+            document.body,
+          )}
+      </div>
+      {error && <p className="mt-1 px-4 text-xs text-red-400">{error}</p>}
     </div>
   );
 }
