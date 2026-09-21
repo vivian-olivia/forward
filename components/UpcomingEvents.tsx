@@ -14,12 +14,10 @@ import { gsap, useGSAP } from "@/lib/gsap";
 
 const EVENTS = [
   {
-    title: "Parenting Class",
-    tagline: "Dekat di Hati, Kuat di Relasi",
+    title: "Parenting Class: Parenting Through Every Season",
     image: "/events/parenting-2.jpeg",
     imagePosition: "center 25%",
     badgeClass: "bg-accent-orange",
-    taglineClass: "text-accent-orange",
     status: "confirmed" as const,
     date: "Sabtu, 3 Oktober 2026",
     time: "16.00 WIB",
@@ -32,13 +30,18 @@ const EVENTS = [
   },
   {
     title: "Youth Gathering",
-    tagline: "Kumpul seru bareng YouthConnect",
-    image: "/events/youth-gathering-2.jpeg",
+    image: "/events/youth-gathering-3.jpeg",
     imagePosition: "center top",
     imageScaleClass: "scale-[1.04] origin-top",
     badgeClass: "bg-accent-cyan",
-    taglineClass: "text-accent-cyan",
     status: "coming-soon" as const,
+    date: "Rabu, 30 September 2026",
+    time: "19.00 - 21.00 WIB",
+    location: "GKDI Tangerang Lt. 4",
+    mapUrl: "https://maps.app.goo.gl/Z8R2r5xFzMVxDUUu6",
+    // WIB (UTC+7) converted to UTC for the Google Calendar link
+    calendarStartUTC: "20260930T120000Z",
+    calendarEndUTC: "20260930T140000Z",
   },
 ];
 
@@ -49,7 +52,6 @@ function buildGoogleCalendarUrl(event: (typeof EVENTS)[number]) {
     action: "TEMPLATE",
     text: event.title,
     dates: `${event.calendarStartUTC}/${event.calendarEndUTC}`,
-    details: event.tagline,
     location: event.location ?? "",
   });
 
@@ -140,39 +142,42 @@ export default function UpcomingEvents() {
               <h3 className="font-display text-xl font-bold text-white md:text-2xl">
                 {event.title}
               </h3>
-              <p className={`mt-1 text-sm font-medium md:text-base ${event.taglineClass}`}>
-                {event.tagline}
-              </p>
 
-              {event.status === "confirmed" ? (
+              {"date" in event && event.date ? (
                 <div className="mt-4 space-y-2.5 border-t border-white/10 pt-4">
                   <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
                     <FaCalendarDays className="mt-0.5 shrink-0 text-white/40" />
                     <span>{event.date}</span>
                   </div>
-                  <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
-                    <FaClock className="mt-0.5 shrink-0 text-white/40" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
-                    <FaLocationDot className="mt-0.5 shrink-0 text-white/40" />
-                    {event.mapUrl ? (
-                      <a
-                        href={event.mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-white"
-                      >
-                        {event.location}
-                      </a>
-                    ) : (
-                      <span>{event.location}</span>
-                    )}
-                  </div>
-                  <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
-                    <FaMicrophone className="mt-0.5 shrink-0 text-white/40" />
-                    <span>{event.speakers}</span>
-                  </div>
+                  {"time" in event && event.time ? (
+                    <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
+                      <FaClock className="mt-0.5 shrink-0 text-white/40" />
+                      <span>{event.time}</span>
+                    </div>
+                  ) : null}
+                  {"location" in event && event.location ? (
+                    <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
+                      <FaLocationDot className="mt-0.5 shrink-0 text-white/40" />
+                      {"mapUrl" in event && event.mapUrl ? (
+                        <a
+                          href={event.mapUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-white"
+                        >
+                          {event.location}
+                        </a>
+                      ) : (
+                        <span>{event.location}</span>
+                      )}
+                    </div>
+                  ) : null}
+                  {"speakers" in event && event.speakers ? (
+                    <div className="flex items-start gap-2.5 text-sm text-white/70 md:text-base">
+                      <FaMicrophone className="mt-0.5 shrink-0 text-white/40" />
+                      <span>{event.speakers}</span>
+                    </div>
+                  ) : null}
 
                   {(() => {
                     const calendarUrl = buildGoogleCalendarUrl(event);
