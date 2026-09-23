@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { buildConnectNotification } from "@/lib/message-templates";
+import { isValidIndonesianPhone } from "@/lib/phone";
 
 // Connect team — see components/EventDetail.tsx CONTACT_PHONE_WA.
 const CONNECT_TEAM_PHONE_WA = "6285121969884";
@@ -85,6 +86,7 @@ export default function KeepInTouch() {
     const errors: typeof fieldErrors = {};
     if (!name.trim()) errors.name = "Nama lengkap wajib diisi.";
     if (!phone.trim()) errors.phone = "No. WhatsApp wajib diisi.";
+    else if (!isValidIndonesianPhone(phone)) errors.phone = "Nomor WhatsApp tidak valid.";
     if (!ageGroup) errors.ageGroup = "Pilih status/kelompok Anda.";
     if (!consent) errors.consent = "Anda harus menyetujui persetujuan ini.";
 
@@ -93,14 +95,6 @@ export default function KeepInTouch() {
 
     setStatus("loading");
     setErrorMsg("");
-
-    const waUrl = `https://wa.me/${CONNECT_TEAM_PHONE_WA}?text=${encodeURIComponent(
-      buildConnectNotification(name),
-    )}`;
-
-    // Open the WhatsApp chat right away, synchronously with the click, so
-    // the user lands straight on the chat instead of a blank tab.
-    window.open(waUrl, "_blank");
 
     try {
       const res = await fetch("/api/rsvp", {
@@ -113,6 +107,12 @@ export default function KeepInTouch() {
       if (!res.ok) {
         throw new Error(data.error ?? "Terjadi kesalahan, silakan coba lagi.");
       }
+
+      // Only redirect to WhatsApp once the data is confirmed saved.
+      const waUrl = `https://wa.me/${CONNECT_TEAM_PHONE_WA}?text=${encodeURIComponent(
+        buildConnectNotification(name),
+      )}`;
+      window.open(waUrl, "_blank");
 
       setStatus("idle");
       setName("");
@@ -202,7 +202,12 @@ export default function KeepInTouch() {
           </div>
 
           {status === "error" && (
-            <p className="text-sm text-red-400">{errorMsg}</p>
+            <div
+              role="alert"
+              className="touch-field rounded-2xl border border-red-400/50 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+            >
+              {errorMsg}
+            </div>
           )}
         </div>
 
