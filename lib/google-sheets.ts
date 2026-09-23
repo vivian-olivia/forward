@@ -13,6 +13,10 @@ export async function appendRegistrantRow(row: {
   name: string;
   phone: string;
   ageGroup: string;
+  attendeeCount: number;
+  preEvents: string[];
+  bringingChildren: string;
+  invitedBy: string;
 }) {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
   const secret = process.env.GOOGLE_SHEETS_WEBHOOK_SECRET;
@@ -39,6 +43,10 @@ export async function appendRegistrantRow(row: {
       name: row.name,
       phone: row.phone,
       ageGroup: row.ageGroup,
+      attendeeCount: row.attendeeCount,
+      preEvents: row.preEvents.join(", "),
+      bringingChildren: row.bringingChildren,
+      invitedBy: row.invitedBy,
     }),
   });
 
