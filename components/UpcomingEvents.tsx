@@ -29,7 +29,7 @@ const EVENTS = [
     calendarEndUTC: "20261003T110000Z",
   },
   {
-    title: "Youth Gathering",
+    title: "Youth Gathering: Moving Forward",
     image: "/events/youth-gathering-3.jpeg",
     imagePosition: "center top",
     imageScaleClass: "scale-[1.04] origin-top",

@@ -83,7 +83,9 @@ export default function MusicPlayer() {
 
   const play = () => {
     wantsPlayRef.current = true;
-    playerRef.current?.playVideo();
+    if (typeof playerRef.current?.playVideo === "function") {
+      playerRef.current.playVideo();
+    }
   };
 
   useEffect(() => {
