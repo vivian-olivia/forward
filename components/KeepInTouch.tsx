@@ -20,10 +20,24 @@ const AGE_GROUPS = [
   { value: "golden_age", label: "Usia Lanjut (65+)" },
 ];
 
+const PRE_EVENTS = [
+  { value: "midweek_youth_gathering", label: "Midweek Youth Gathering" },
+  { value: "parenting_class", label: "Parenting Class" },
+];
+
+const BRINGING_CHILDREN_OPTIONS = [
+  { value: "yes", label: "Ya" },
+  { value: "no", label: "Tidak" },
+];
+
 export default function KeepInTouch() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
+  const [attendeeCount, setAttendeeCount] = useState(1);
+  const [preEvents, setPreEvents] = useState<string[]>([]);
+  const [bringingChildren, setBringingChildren] = useState("");
+  const [invitedBy, setInvitedBy] = useState("");
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -32,6 +46,8 @@ export default function KeepInTouch() {
     name?: string;
     phone?: string;
     ageGroup?: string;
+    bringingChildren?: string;
+    invitedBy?: string;
     consent?: string;
   }>({});
   const rootRef = useRef<HTMLElement>(null);
@@ -88,6 +104,8 @@ export default function KeepInTouch() {
     if (!phone.trim()) errors.phone = "No. WhatsApp wajib diisi.";
     else if (!isValidIndonesianPhone(phone)) errors.phone = "Nomor WhatsApp tidak valid.";
     if (!ageGroup) errors.ageGroup = "Pilih status/kelompok Anda.";
+    if (!bringingChildren) errors.bringingChildren = "Pilih salah satu.";
+    if (!invitedBy.trim()) errors.invitedBy = "Kolom ini wajib diisi.";
     if (!consent) errors.consent = "Anda harus menyetujui persetujuan ini.";
 
     setFieldErrors(errors);
@@ -100,7 +118,15 @@ export default function KeepInTouch() {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, ageGroup }),
+        body: JSON.stringify({
+          name,
+          phone,
+          ageGroup,
+          attendeeCount,
+          preEvents,
+          bringingChildren,
+          invitedBy,
+        }),
       });
       const data = await res.json();
 
@@ -118,6 +144,10 @@ export default function KeepInTouch() {
       setName("");
       setPhone("");
       setAgeGroup("");
+      setAttendeeCount(1);
+      setPreEvents([]);
+      setBringingChildren("");
+      setInvitedBy("");
       setConsent(false);
       setFieldErrors({});
       setShowToast(true);
@@ -177,6 +207,70 @@ export default function KeepInTouch() {
             options={AGE_GROUPS}
             placeholder="Pilih kategori Anda"
             error={fieldErrors.ageGroup}
+          />
+
+          <StepperField
+            icon={<UsersIcon />}
+            label="Jumlah yang Hadir*"
+            value={attendeeCount}
+            onChange={setAttendeeCount}
+          />
+
+          <div className="touch-field">
+            <span className="flex items-center gap-2 px-4 text-sm font-medium text-white">
+              <span className="text-accent-cyan">
+                <CalendarIcon />
+              </span>
+              Mengikuti Pre-Event
+            </span>
+            <div className="mt-2 space-y-1.5 px-4">
+              {PRE_EVENTS.map((opt) => (
+                <label
+                  key={opt.value}
+                  className="flex items-center gap-2.5 text-sm leading-relaxed text-white/60"
+                >
+                  <input
+                    type="checkbox"
+                    checked={preEvents.includes(opt.value)}
+                    onChange={(e) => {
+                      setPreEvents((prev) =>
+                        e.target.checked
+                          ? [...prev, opt.value]
+                          : prev.filter((v) => v !== opt.value),
+                      );
+                    }}
+                    className="h-4 w-4 shrink-0 accent-accent-cyan"
+                  />
+                  <span>{opt.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <SelectField
+            icon={<ChildIcon />}
+            label="Membawa Anak*"
+            value={bringingChildren}
+            onChange={(v) => {
+              setBringingChildren(v);
+              if (fieldErrors.bringingChildren)
+                setFieldErrors((prev) => ({ ...prev, bringingChildren: undefined }));
+            }}
+            options={BRINGING_CHILDREN_OPTIONS}
+            placeholder="Pilih salah satu"
+            error={fieldErrors.bringingChildren}
+          />
+
+          <Field
+            icon={<InviteIcon />}
+            label="Diundang oleh*"
+            placeholder="Contoh: Nama teman/kerabat"
+            value={invitedBy}
+            onChange={(v) => {
+              setInvitedBy(v);
+              if (fieldErrors.invitedBy) setFieldErrors((prev) => ({ ...prev, invitedBy: undefined }));
+            }}
+            error={fieldErrors.invitedBy}
           />
 
           <div className="touch-field">
@@ -301,6 +395,51 @@ function Field({
         />
       </label>
       {error && <p className="mt-1 px-4 text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+function StepperField({
+  icon,
+  label,
+  value,
+  onChange,
+  min = 1,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+}) {
+  return (
+    <div className="touch-field">
+      <div className="rounded-2xl border border-ink-panel-border bg-ink-panel/70 px-4 py-3">
+        <span className="flex items-center gap-2 text-sm font-medium text-white">
+          <span className="text-accent-cyan">{icon}</span>
+          {label}
+        </span>
+        <div className="mt-1.5 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => onChange(Math.max(min, value - 1))}
+            disabled={value <= min}
+            aria-label="Kurangi jumlah"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink-panel-border text-lg text-white transition-colors disabled:opacity-30"
+          >
+            −
+          </button>
+          <span className="w-6 text-center text-sm text-white">{value}</span>
+          <button
+            type="button"
+            onClick={() => onChange(value + 1)}
+            aria-label="Tambah jumlah"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink-panel-border text-lg text-white transition-colors"
+          >
+            +
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -447,6 +586,34 @@ function UserIcon() {
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
       <path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3.5 9.5h17" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M8 2.5v4M16 2.5v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChildIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="6" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M6 21v-4a6 6 0 0 1 12 0v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function InviteIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3.5 6.5 12 13l8.5-6.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

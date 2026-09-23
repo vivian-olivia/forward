@@ -27,7 +27,16 @@ function doPost(e) {
     }
 
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["timestamp", "name", "phone", "group"]);
+      sheet.appendRow([
+        "timestamp",
+        "name",
+        "phone",
+        "group",
+        "attendeeCount",
+        "preEvents",
+        "bringingChildren",
+        "invitedBy",
+      ]);
     }
 
     sheet.appendRow([
@@ -35,6 +44,10 @@ function doPost(e) {
       body.name || "",
       body.phone || "",
       body.ageGroup || "",
+      body.attendeeCount || "",
+      body.preEvents || "",
+      body.bringingChildren || "",
+      body.invitedBy || "",
     ]);
 
     result.ok = true;
