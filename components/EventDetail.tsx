@@ -87,6 +87,8 @@ export default function EventDetail() {
         </Row>
 
         <Row icon={<PhoneIcon />} label="Kontak">
+          GKDI Tangerang
+          <br />
           <a
             href={`https://wa.me/${CONTACT_PHONE_WA}?text=${encodeURIComponent(
               CONTACT_INQUIRY_MESSAGE,
