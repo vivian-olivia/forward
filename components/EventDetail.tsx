@@ -7,10 +7,10 @@ import {
   EVENT_TIME_LABEL,
 } from "@/lib/event";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { CONTACT_INQUIRY_MESSAGE } from "@/lib/message-templates";
 
-const CONTACT_NAME = "Devi";
-const CONTACT_PHONE_DISPLAY = "+62 896-5380-4381";
-const CONTACT_PHONE_WA = "6289653804381";
+const CONTACT_PHONE_DISPLAY = "+62 851-2196-9884";
+const CONTACT_PHONE_WA = "6285121969884";
 const MAP_SHARE_LINK =
   "https://www.google.com/maps/place/Serpong+Convention+Center/@-6.2218735,106.6298166,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69f95eaf6c9425:0xdc0c157692e78080!8m2!3d-6.2218735!4d106.6323915!16s%2Fg%2F11zgdg1hpl";
 const MAP_EMBED_SRC =
@@ -86,11 +86,11 @@ export default function EventDetail() {
           </a>
         </Row>
 
-        <Row icon={<PhoneIcon />} label="Contact Person">
-          {CONTACT_NAME}
-          <br />
+        <Row icon={<PhoneIcon />} label="Kontak">
           <a
-            href={`https://wa.me/${CONTACT_PHONE_WA}`}
+            href={`https://wa.me/${CONTACT_PHONE_WA}?text=${encodeURIComponent(
+              CONTACT_INQUIRY_MESSAGE,
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-accent-cyan"

@@ -6,8 +6,8 @@ import { FaWhatsapp } from "react-icons/fa";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { buildConnectNotification } from "@/lib/message-templates";
 
-// Devi (connect team) — see components/EventDetail.tsx CONTACT_PHONE_WA.
-const CONNECT_TEAM_PHONE_WA = "6289653804381";
+// Connect team — see components/EventDetail.tsx CONTACT_PHONE_WA.
+const CONNECT_TEAM_PHONE_WA = "6285121969884";
 
 type Status = "idle" | "loading" | "success" | "error";
 
